@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -15,11 +16,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.util.Assert;
 
 import io.github.pleuvoir.rabbit.kit.ApplicationContextUtil;
 import io.github.pleuvoir.rabbit.kit.PropertiesWrap;
 
 @Import({ ApplicationContextUtil.class })
+@EnableRabbit
 public class RabbitMQConfiguration {
 
 	private String rabbitmqHost;
@@ -35,8 +38,8 @@ public class RabbitMQConfiguration {
 		Resource res = new PathMatchingResourcePatternResolver().getResource(location);
 		Properties properties = PropertiesLoaderUtils.loadProperties(res);
 		PropertiesWrap config = new PropertiesWrap(properties);
-
 		rabbitmqHost = config.getString("rabbitmq.host");
+		Assert.notNull(rabbitmqHost, "rabbitmqHost must be non-null.");
 		rabbitmqPort = config.getInteger("rabbitmq.port", 5672);
 		rabbitmqVirtualHost = config.getString("rabbitmq.virtualHost", "/");
 		rabbitmqUsername = config.getString("rabbitmq.username");
