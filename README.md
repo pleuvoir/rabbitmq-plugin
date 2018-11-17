@@ -39,7 +39,7 @@ rabbitmq.password=guest
 
 #### 3. 使用 spring 进行管理
 
-对于使用 `xml` 进行配置的项目，只需要如下声明，即可获得缓存能力。
+对于使用 `xml` 进行配置的项目，只需要如下声明即可。
 
 ```xml
 <bean class="io.github.pleuvoir.rabbit.RabbitMQConfiguration">
@@ -59,7 +59,7 @@ public class PluginConfiguration {
 
 只需在配置类中声明 `@EnableRabbitMQPlugin` 即可，当然这是使用默认配置。 `EnableRabbitMQPlugin` 注解有一个属性是  `location` 表示需要加载的配置文件位置, `location` 可以不声明，默认为  classpath 下的 `rabbitmq.properties` 文件。 
 
-如果项目使用  `Profiles` 来管理 spring 的环境，如  `Environment().setActiveProfiles("dev")` ，自动配置支持使用 `[profile]` 替换环境修饰符。即如果您使用了 `@EnableRedisPlugin(location = "config/[profile]/rabbitmq-[profile].properties")` 进行配置，插件会寻找   `config/dev/rabbitmq-dev.properties` 文件，确保文件存在即可。使用 xml 注册的方式，不受此特性的影响，请配置实际的文件名称。
+如果项目使用  `Profiles` 来管理 spring 的环境，如  `Environment().setActiveProfiles("dev")` ，自动配置支持使用 `[profile]` 替换环境修饰符。即如果您使用了 `@EnableRabbitMQPlugin(location = "config/[profile]/rabbitmq-[profile].properties")` 进行配置，插件会寻找   `config/dev/rabbitmq-dev.properties` 文件，确保文件存在即可。使用 xml 注册的方式，不受此特性的影响，请配置实际的文件名称。
 
 
 ### TODO LIST
