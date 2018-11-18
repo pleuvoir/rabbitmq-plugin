@@ -1,7 +1,6 @@
 package io.github.pleuvoir.rabbit;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -13,13 +12,11 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.Assert;
 
-import io.github.pleuvoir.rabbit.kit.ApplicationContextUtil;
-import io.github.pleuvoir.rabbit.kit.PropertiesWrap;
+import io.github.pleuvoir.base.kit.ApplicationContextUtil;
+import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
+import io.github.pleuvoir.base.kit.PropertiesWrap;
 
 @Import({ ApplicationContextUtil.class })
 @EnableRabbit
@@ -35,9 +32,7 @@ public class RabbitMQConfiguration {
 	 * 设置RabbitMQ配置
 	 */
 	public void setLocation(String location) throws IOException {
-		Resource res = new PathMatchingResourcePatternResolver().getResource(location);
-		Properties properties = PropertiesLoaderUtils.loadProperties(res);
-		PropertiesWrap config = new PropertiesWrap(properties);
+		PropertiesWrap config = PropertiesLoadUtil.pathToProWrap(location);
 		rabbitmqHost = config.getString("rabbitmq.host");
 		Assert.notNull(rabbitmqHost, "rabbitmqHost must be non-null.");
 		rabbitmqPort = config.getInteger("rabbitmq.port", 5672);

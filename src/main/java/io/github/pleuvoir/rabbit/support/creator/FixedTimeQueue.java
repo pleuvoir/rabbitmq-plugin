@@ -20,7 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import io.github.pleuvoir.rabbit.kit.ApplicationContextUtil;
+import io.github.pleuvoir.base.kit.ApplicationContextUtil;
 import io.github.pleuvoir.rabbit.support.producer.MQMessage;
 
 
