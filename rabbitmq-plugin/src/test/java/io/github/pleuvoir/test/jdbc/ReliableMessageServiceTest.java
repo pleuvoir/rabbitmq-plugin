@@ -49,9 +49,9 @@ public class ReliableMessageServiceTest extends BaseTest {
 		Assert.assertNotNull(afterLog.getCreateTime());
 		Assert.assertNull(afterLog.getUpdateTime());
 		
-//		reliableMessageService.remove(messageId);
-//		
-//		Assert.assertNull(reliableMessageService.findById(messageId));
+		reliableMessageService.remove(messageId);
+		
+		Assert.assertNull(reliableMessageService.findById(messageId));
 	}
 
 

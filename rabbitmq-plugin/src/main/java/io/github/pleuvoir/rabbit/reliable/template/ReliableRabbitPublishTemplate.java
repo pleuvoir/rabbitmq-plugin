@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.reliable;
+package io.github.pleuvoir.rabbit.reliable.template;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +14,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
 import io.github.pleuvoir.rabbit.reliable.jdbc.RabbitMessageLog;
 import io.github.pleuvoir.rabbit.utils.Generator;
 

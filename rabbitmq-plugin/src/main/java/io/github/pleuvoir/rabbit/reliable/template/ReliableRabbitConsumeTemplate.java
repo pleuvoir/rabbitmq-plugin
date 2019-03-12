@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.reliable;
+package io.github.pleuvoir.rabbit.reliable.template;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,7 @@ import org.springframework.amqp.core.MessageProperties;
 
 import com.rabbitmq.client.Channel;
 
+import io.github.pleuvoir.rabbit.reliable.ReliableExcuteWithTransaction;
 import io.github.pleuvoir.rabbit.reliable.ReliableExcuteWithTransaction.RabbitConsumeCallBack;
 
 public class ReliableRabbitConsumeTemplate {

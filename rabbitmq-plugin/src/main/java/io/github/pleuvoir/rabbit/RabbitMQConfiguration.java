@@ -19,9 +19,9 @@ import io.github.pleuvoir.base.kit.ApplicationContextUtil;
 import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
 import io.github.pleuvoir.base.kit.PropertiesWrap;
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
-import io.github.pleuvoir.rabbit.reliable.ReliableRabbitConsumeTemplate;
-import io.github.pleuvoir.rabbit.reliable.ReliableRabbitPublishTemplate;
 import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCReliableMessageService;
+import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate;
+import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
 import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueueHelper;
 
 @Import({ApplicationContextUtil.class})
