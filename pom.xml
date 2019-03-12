@@ -4,7 +4,7 @@
 
 	<groupId>io.github.pleuvoir</groupId>
 	<artifactId>rabbitmq-plugin</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>The project provide more convenient API to use rabbitmq.</description>
@@ -17,15 +17,38 @@
 		<spring.version>5.0.8.RELEASE</spring.version>
 		<junit.version>4.12</junit.version>
 		<my.bom.version>1.0.0</my.bom.version>
+		<uuid.version>3.1.5</uuid.version>
+		<druid.version>1.0.31</druid.version>
 	</properties>
 
 	<dependencies>
+	<dependency>
+			<groupId>oracle</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<!-- plugin base -->
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>
 			<artifactId>plugin-base</artifactId>
 			<version>${plugin.base.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.uuid</groupId>
+			<artifactId>java-uuid-generator</artifactId>
+			<version>${uuid.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>${druid.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		
 		<!-- RabbitMQ -->
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>

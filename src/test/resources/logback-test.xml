@@ -68,4 +68,6 @@
     </root>
 
 
+	<logger name="io.github.pleuvoir.rabbit" level="DEBUG" />
+
 </configuration>

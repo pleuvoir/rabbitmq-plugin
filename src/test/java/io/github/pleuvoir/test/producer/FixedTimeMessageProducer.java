@@ -6,9 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueue;
 import io.github.pleuvoir.test.model.FixedTimeMessage;
-import io.github.pleuvoir.test.support.RabbitConst;
 
 @Component
 @SuppressWarnings("unused")
@@ -34,12 +32,12 @@ public class FixedTimeMessageProducer {
 //			rabbitTemplate.convertAndSend(fixedTimeQueue.getExchange(), fixedTimeQueue.getRoutingKey(), msg.toJSON());
 //		}
 		
-		 FixedTimeQueue.create(msg.getExcutetime())
-				.deadLetterExchange(RabbitConst.FixedTime.EXCHANGE)
-				.deadLetterRoutingKey(RabbitConst.FixedTime.ROUTING_KEY)
-				.requestId(msg.getId())
-				.commit()
-				.sendMessageIfAlive(msg);
+//		 FixedTimeQueue.create(msg.getExcutetime())
+//				.deadLetterExchange(RabbitConst.FixedTime.EXCHANGE)
+//				.deadLetterRoutingKey(RabbitConst.FixedTime.ROUTING_KEY)
+//				.requestId(msg.getId())
+//				.commit()
+//				.sendMessageIfAlive(msg);
 	}
 	
 
