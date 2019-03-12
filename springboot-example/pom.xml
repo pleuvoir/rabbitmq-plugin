@@ -38,13 +38,13 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>
 			<artifactId>rabbitmq-plugin</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-	
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -102,11 +102,6 @@
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus</artifactId>
 			<version>${mybatis-plus.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>oracle</groupId>
-			<artifactId>ojdbc8</artifactId>
-			<version>${ojdbc8.version}</version>
 		</dependency>
 
 		<!-- RabbitMQ -->

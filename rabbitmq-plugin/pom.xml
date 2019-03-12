@@ -5,7 +5,7 @@
 	<groupId>io.github.pleuvoir</groupId>
 	<artifactId>rabbitmq-plugin</artifactId>
 	<version>1.0.2</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>The project provide more convenient API to use rabbitmq.</description>
 	<url>https://github.com/pleuvoir/rabbitmq-plugin</url>
@@ -16,17 +16,21 @@
 		<plugin.base.version>1.0.1</plugin.base.version>
 		<spring.version>5.0.8.RELEASE</spring.version>
 		<junit.version>4.12</junit.version>
-		<my.bom.version>1.0.0</my.bom.version>
 		<uuid.version>3.1.5</uuid.version>
 		<druid.version>1.0.31</druid.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<logback.version>1.2.3</logback.version>
+		<!-- rabbitmq -->
+		<spring.rabbit.version>2.0.5.RELEASE</spring.rabbit.version>
+		<reactor.core.version>3.1.8.RELEASE</reactor.core.version>
+		<reactor.net.version>2.0.8.RELEASE</reactor.net.version>
+		<reactor.netty.version>0.7.8.RELEASE</reactor.netty.version>
+		<rabbitmq.ampq.version>5.4.0</rabbitmq.ampq.version>
+		<rabbitmq.http.version>2.1.0.RELEASE</rabbitmq.http.version>
 	</properties>
 
 	<dependencies>
-	<dependency>
-			<groupId>oracle</groupId>
-			<artifactId>ojdbc8</artifactId>
-			<version>1.0</version>
-		</dependency>
+		
 		<!-- plugin base -->
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>
@@ -48,22 +52,53 @@
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<!-- RabbitMQ -->
 		<dependency>
-			<groupId>io.github.pleuvoir</groupId>
-			<artifactId>spring-rabbitmq-bom</artifactId>
-			<type>pom</type>
-			<optional>true</optional>
-			<version>${my.bom.version}</version>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>${spring.rabbit.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>${rabbitmq.ampq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>http-client</artifactId>
+			<version>${rabbitmq.http.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+			<version>${reactor.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-net</artifactId>
+			<version>${reactor.net.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor.ipc</groupId>
+			<artifactId>reactor-netty</artifactId>
+			<version>${reactor.netty.version}</version>
 		</dependency>
 		<!-- logger -->
 		<dependency>
-			<groupId>io.github.pleuvoir</groupId>
-			<artifactId>slf4j-logback-bom</artifactId>
-			<type>pom</type>
-			<optional>true</optional>
-			<version>${my.bom.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>

@@ -6,13 +6,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,7 +22,6 @@ import org.springframework.util.CollectionUtils;
 
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
 import io.github.pleuvoir.rabbit.utils.ClassHelper;
-import io.github.pleuvoir.rabbit.utils.DateFormat;
 
 public class JDBCReliableMessageService implements ReliableMessageService, InitializingBean {
 
@@ -49,28 +48,24 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 		}
 
 		List<RabbitMessageLog> result = tpl.query(
-
 				"select id,status,create_time,update_time from rabbitmq_message_log where id = ?",
-
 				new Object[]{messageId}, new RowMapper<RabbitMessageLog>() {
-
 					@Override
 					public RabbitMessageLog mapRow(ResultSet rs, int rowNum) throws SQLException {
 						RabbitMessageLog log = new RabbitMessageLog();
 						log.setId(rs.getString("id"));
 						log.setStatus(rs.getString("status"));
-						String createTime = rs.getString("create_time");
-						if (StringUtils.isNotBlank(createTime)) {
-							log.setCreateTime(DateFormat.DATETIME_MILLISECOND_1.parse(createTime));
+						Timestamp createTime = rs.getTimestamp("create_time");
+						if (createTime != null) {
+							log.setCreateTime(createTime.toLocalDateTime());
 						}
-						String updateTime = rs.getString("update_time");
-						if (StringUtils.isNotBlank(updateTime)) {
-							log.setCreateTime(DateFormat.DATETIME_MILLISECOND_1.parse(updateTime));
+						Timestamp updateTime = rs.getTimestamp("update_time");
+						if (updateTime != null) {
+							log.setCreateTime(updateTime.toLocalDateTime());
 						}
 						return log;
 					}
 				});
-
 		return CollectionUtils.isEmpty(result) ? null : result.get(0);
 	}
 
@@ -87,14 +82,11 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 		String messageId = log.getId();
 		String status = log.getStatus();
 		LocalDateTime updateTime = log.getUpdateTime();
-
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("更新MQ消息记录，messageId：{}，status：{}", messageId, status);
 		}
-
 		int update = tpl.update("update rabbitmq_message_log set status = ? , update_time = ? where id = ?",
 				new Object[]{status, updateTime, messageId});
-
 		if (update == 0) {
 			throw new RuntimeException(String.format("更新MQ消息记录失败，messageId：%s，status：%s", messageId, status));
 		}
