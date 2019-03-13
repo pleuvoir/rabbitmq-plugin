@@ -4,22 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rabbitmq.client.Channel;
 
-import io.github.pleuvoir.rabbit.reliable.ReliableExcuteWithTransaction;
-import io.github.pleuvoir.rabbit.reliable.ReliableExcuteWithTransaction.RabbitConsumeCallBack;
+import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction;
+import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction.RabbitConsumeCallBack;
 
 public class ReliableRabbitConsumeTemplate {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReliableRabbitConsumeTemplate.class);
 	
-	private ReliableExcuteWithTransaction reliableExcuteWithTransaction;
-	
+	@Autowired
+	private JDBCExcuteWithTransaction reliableExcuteWithTransaction;
 
-	public void setReliableExcuteWithTransaction(ReliableExcuteWithTransaction reliableExcuteWithTransaction) {
-		this.reliableExcuteWithTransaction = reliableExcuteWithTransaction;
-	}
 
 	private boolean defaultRequeueStrategy = false;
 	
@@ -67,7 +65,7 @@ public class ReliableRabbitConsumeTemplate {
 			} else {
 				LOGGER.info("*[messageId={}] 消息已拒绝。", messageId);
 			}
-			throw e; // 回滚并应答完成后，将异常抛出，方便外层判断业务异常或者其它异常
+			throw e;
 		}
 		channel.basicAck(deliveryTag, false);
 	}

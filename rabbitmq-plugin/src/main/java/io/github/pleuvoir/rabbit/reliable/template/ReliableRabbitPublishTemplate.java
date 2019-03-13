@@ -1,7 +1,5 @@
 package io.github.pleuvoir.rabbit.reliable.template;
 
-import java.time.LocalDateTime;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -15,7 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
-import io.github.pleuvoir.rabbit.reliable.jdbc.RabbitMessageLog;
+import io.github.pleuvoir.rabbit.reliable.jdbc.MessageCommitLog;
 import io.github.pleuvoir.rabbit.utils.Generator;
 
 public class ReliableRabbitPublishTemplate extends RabbitTemplate {
@@ -36,11 +34,7 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 				MessageProperties messageProperties = message.getMessageProperties();
 				String messageId = Generator.nextUUID();
 				messageProperties.setMessageId(messageId);
-				RabbitMessageLog log = new RabbitMessageLog();
-				log.setId(messageId);
-				log.setCreateTime(LocalDateTime.now());
-				log.setStatus(RabbitMessageLog.PREPARE_TO_BROKER);
-				reliableMessageService.insert(log);
+				reliableMessageService.insert(MessageCommitLog.buildPrepareMessage(messageId));
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
 				}

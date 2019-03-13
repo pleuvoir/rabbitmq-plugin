@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.reliable;
+package io.github.pleuvoir.rabbit.reliable.jdbc;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +11,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import io.github.pleuvoir.rabbit.reliable.jdbc.RabbitMessageLog;
+import io.github.pleuvoir.rabbit.reliable.ExcuteWithTransaction;
+import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
 
 @Service
-public class ReliableExcuteWithTransaction implements ExcuteWithTransaction {
+public class JDBCExcuteWithTransaction implements ExcuteWithTransaction {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReliableExcuteWithTransaction.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCExcuteWithTransaction.class);
 	
 	@Autowired ReliableMessageService reliableMessageService;
 	
@@ -31,13 +32,13 @@ public class ReliableExcuteWithTransaction implements ExcuteWithTransaction {
 		
 		Assert.notNull(callBack, "业务回调不能为空");
 		
-		RabbitMessageLog prevMessageLog = reliableMessageService.findById(messageId);
+		MessageCommitLog prevMessageLog = reliableMessageService.findById(messageId);
 		if (prevMessageLog == null) {
 			LOGGER.warn("*[messageId={}] 未能获取消息日志，忽略此次消息消费。", messageId);
 			return;
 		}
 
-		if (prevMessageLog.getStatus().equals(RabbitMessageLog.CONSUMER_SUCCESS)) {
+		if (prevMessageLog.getStatus().equals(MessageCommitLog.CONSUMER_SUCCESS)) {
 			LOGGER.warn("*[messageId={}] 消息日志表明，此消息已经消费成功，可能是应答时出现故障，此次消息被忽略。", messageId);
 			return;
 		}
@@ -46,7 +47,7 @@ public class ReliableExcuteWithTransaction implements ExcuteWithTransaction {
 		callBack.doInTransaction();
 
 		prevMessageLog.setUpdateTime(LocalDateTime.now());
-		prevMessageLog.setStatus(RabbitMessageLog.CONSUMER_SUCCESS);
+		prevMessageLog.setStatus(MessageCommitLog.CONSUMER_SUCCESS);
 		reliableMessageService.updateById(prevMessageLog);
 		
 		LOGGER.info("*[messageId={}] 已更新消息日志为成功。", messageId);

@@ -2,7 +2,7 @@ package io.github.pleuvoir.rabbit.reliable.jdbc;
 
 import java.time.LocalDateTime;
 
-public class RabbitMessageLog {
+public class MessageCommitLog {
 	
 	public static final String PREPARE_TO_BROKER = "0";
 	
@@ -17,19 +17,19 @@ public class RabbitMessageLog {
 	private String status; // 消息投递状态
 
 
-	public RabbitMessageLog() {
+	public MessageCommitLog() {
 		super();
 	}
 
-	public RabbitMessageLog(String id, LocalDateTime createTime, LocalDateTime updateTime, String status) {
+	public MessageCommitLog(String id, LocalDateTime createTime, LocalDateTime updateTime, String status) {
 		this.id = id;
 		this.createTime = createTime;
 		this.updateTime = updateTime;
 		this.status = status;
 	}
 
-	public static RabbitMessageLog buildPrepareMessage(String messageId) {
-		return new RabbitMessageLog(messageId, LocalDateTime.now(), null, RabbitMessageLog.PREPARE_TO_BROKER);
+	public static MessageCommitLog buildPrepareMessage(String messageId) {
+		return new MessageCommitLog(messageId, LocalDateTime.now(), null, MessageCommitLog.PREPARE_TO_BROKER);
 	}
 
 	// getter and setter

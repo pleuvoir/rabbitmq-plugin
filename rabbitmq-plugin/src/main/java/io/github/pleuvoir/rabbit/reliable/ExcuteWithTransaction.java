@@ -1,6 +1,6 @@
 package io.github.pleuvoir.rabbit.reliable;
 
-import io.github.pleuvoir.rabbit.reliable.ReliableExcuteWithTransaction.RabbitConsumeCallBack;
+import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction.RabbitConsumeCallBack;
 
 public interface ExcuteWithTransaction {
 

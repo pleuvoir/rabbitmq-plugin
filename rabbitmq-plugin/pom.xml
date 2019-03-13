@@ -30,7 +30,11 @@
 	</properties>
 
 	<dependencies>
-		
+		<!-- <dependency>
+			<groupId>oracle</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>${ojdbc8.version}</version>
+		</dependency> -->
 		<!-- plugin base -->
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>

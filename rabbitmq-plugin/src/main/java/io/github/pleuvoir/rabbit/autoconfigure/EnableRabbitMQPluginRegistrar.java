@@ -8,7 +8,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 
 import io.github.pleuvoir.base.autoconfigure.AbstractPluginRegistrar;
-import io.github.pleuvoir.rabbit.RabbitMQConfiguration;
+import io.github.pleuvoir.rabbit.RabbitMQPluginConfiguration;
 
 public class EnableRabbitMQPluginRegistrar extends AbstractPluginRegistrar {
 
@@ -19,7 +19,7 @@ public class EnableRabbitMQPluginRegistrar extends AbstractPluginRegistrar {
 
 	@Override
 	protected Class<?> defaultConfigurationClass() {
-		return RabbitMQConfiguration.class;
+		return RabbitMQPluginConfiguration.class;
 	}
 
 	@Override

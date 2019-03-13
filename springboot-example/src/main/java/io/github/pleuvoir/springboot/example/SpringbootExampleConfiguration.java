@@ -44,9 +44,7 @@ public class SpringbootExampleConfiguration {
 	 * 提示：在spring中如果需要同时使用手动确认和自动确认模式，是需要使用两个监听工厂的。这里我们使用手动确认模式来测试我们的可靠消息处理框架
 	 */
 	
-	/**
-	 *rabbit
-	 */
+	
 	@Bean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
@@ -60,18 +58,14 @@ public class SpringbootExampleConfiguration {
 	public SimpleRabbitListenerContainerFactory manualRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
-		factory.setMaxConcurrentConsumers(1);
+		factory.setMaxConcurrentConsumers(10);
 		factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-		factory.setPrefetchCount(1);
+		factory.setPrefetchCount(250);
 		return factory;
 	}
 
 	
-	/*
-	 * 
-	 * 以下都是和框架无关的
-	 * 
-	 */
+	
 	
 	/**
 	 * mybatis-plus
@@ -94,7 +88,6 @@ public class SpringbootExampleConfiguration {
 		factoryBean.setPlugins(new Interceptor[]{new PaginationInterceptor(), new OptimisticLockerInterceptor()});
 		return factoryBean;
 	}
-
 
 	@Bean("transactionManager")
 	public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource) {

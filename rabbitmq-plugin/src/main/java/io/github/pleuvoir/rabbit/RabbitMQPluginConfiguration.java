@@ -2,20 +2,28 @@ package io.github.pleuvoir.rabbit;
 
 import java.io.IOException;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 
-import io.github.pleuvoir.base.kit.ApplicationContextUtil;
+import com.alibaba.druid.pool.DruidDataSource;
+
 import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
 import io.github.pleuvoir.base.kit.PropertiesWrap;
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
@@ -24,13 +32,15 @@ import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
 import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueueHelper;
 
-@Import({ApplicationContextUtil.class})
 @EnableRabbit
-public class RabbitMQConfiguration extends DataSourceConfiguration {
+@EnableTransactionManagement(proxyTargetClass = true)
+@ComponentScan({"io.github.pleuvoir.rabbit.reliable"})
+public class RabbitMQPluginConfiguration {
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQPluginConfiguration.class);
 
-	public RabbitMQConfiguration() {
-		LOGGER.info("rabbitmq-plugin RabbitMQConfiguration loading ...");
+	public RabbitMQPluginConfiguration() {
+		LOGGER.info("*rabbitmq-plugin RabbitMQPluginConfiguration loading ...");
 	}
 
 	private String rabbitmqHost;
@@ -39,17 +49,48 @@ public class RabbitMQConfiguration extends DataSourceConfiguration {
 	private String rabbitmqUsername;
 	private String rabbitmqPassword;
 
+	private String jdbcDriverClass;
+	private String jdbcURL;
+	private String jdbcUser;
+	private String jdbcPassword;
+	private int initialSize;
+	private int maxActive;
+	private int minIdle;
+	private long maxWait;
+	private long timeBetweenEvictionRunsMillis;
+	private long minEvictableIdleTimeMillis;
+	private String validationQuery;
+
 	/**
-	 * 设置RabbitMQ配置
+	 * 加载配置文件
 	 */
 	public void setLocation(String location) throws IOException {
 		PropertiesWrap config = PropertiesLoadUtil.pathToProWrap(location);
 		rabbitmqHost = config.getString("rabbitmq.host");
-		Assert.notNull(rabbitmqHost, "rabbitmqHost must be non-null.");
 		rabbitmqPort = config.getInteger("rabbitmq.port", 5672);
 		rabbitmqVirtualHost = config.getString("rabbitmq.virtualHost", "/");
 		rabbitmqUsername = config.getString("rabbitmq.username");
 		rabbitmqPassword = config.getString("rabbitmq.password");
+
+		jdbcDriverClass = config.getProperty("datasource.driver");
+		jdbcURL = config.getProperty("datasource.url");
+		jdbcUser = config.getProperty("datasource.username");
+		jdbcPassword = config.getProperty("datasource.password");
+		
+		initialSize = config.getInteger("datasource.initial-size", 2);
+		maxActive = config.getInteger("datasource.max-active", 5);
+		maxWait = config.getInteger("datasource.max-wait", 5);
+		minIdle = config.getInteger("datasource.min-idle", 2);
+		timeBetweenEvictionRunsMillis = config.getLong("datasource.time-between-eviction-runs-millis", 60_000L);
+		minEvictableIdleTimeMillis = config.getLong("datasource.min-evictable-idle-time-millis", 300_000L);
+		validationQuery = config.getProperty("datasource.validation-query");
+		
+		Assert.notNull(rabbitmqHost, "rabbitmqHost must be non-null.");
+		Assert.notNull(jdbcDriverClass, "jdbcDriverClass must be non-null.");
+		Assert.notNull(jdbcURL, "jdbcURL must be non-null.");
+		Assert.notNull(jdbcUser, "jdbcUser must be non-null.");
+		Assert.notNull(jdbcPassword, "jdbcPassword must be non-null.");
+		Assert.notNull(validationQuery, "validationQuery must be non-null.");
 	}
 
 	/**
@@ -69,7 +110,7 @@ public class RabbitMQConfiguration extends DataSourceConfiguration {
 		}
 		return factory;
 	}
-	
+
 
 	// helper
 	@Bean(name = "rabbitAdmin")
@@ -83,7 +124,7 @@ public class RabbitMQConfiguration extends DataSourceConfiguration {
 	 */
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@Bean
-	public RabbitTemplate getRabbitTemplate(ConnectionFactory connectionFactory) {
+	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
 		return new RabbitTemplate(connectionFactory);
 	}
 
@@ -112,4 +153,35 @@ public class RabbitMQConfiguration extends DataSourceConfiguration {
 	public FixedTimeQueueHelper fixedTimeQueueHelper(RabbitAdmin rabbitAdmin) {
 		return new FixedTimeQueueHelper(rabbitAdmin);
 	}
+
+
+	// ## database configuration
+
+	@Bean(name = "pluginDataSource")
+	public DataSource pluginDataSource() {
+		LOGGER.info("*rabbitmq-plugin 使用数据源配置 [jdbcURL={},jdbcUser={}]", this.jdbcURL, this.jdbcUser);
+		
+		DruidDataSource ds = new DruidDataSource();
+		ds.setDriverClassName(this.jdbcDriverClass);
+		ds.setUrl(this.jdbcURL);
+		ds.setUsername(this.jdbcUser);
+		ds.setPassword(this.jdbcPassword);
+		ds.setInitialSize(this.initialSize);
+		ds.setMaxActive(this.maxActive);
+		ds.setMinIdle(this.minIdle);
+		ds.setMaxWait(this.maxWait);
+		ds.setTimeBetweenEvictionRunsMillis(this.timeBetweenEvictionRunsMillis);
+		ds.setMinEvictableIdleTimeMillis(this.minEvictableIdleTimeMillis);
+		ds.setValidationQuery(this.validationQuery);
+		ds.setTestOnBorrow(false);
+		ds.setTestOnReturn(false);
+		ds.setTestWhileIdle(true);
+		return ds;
+	}
+
+	@Bean(name = "pluginJdbcTemplate")
+	public JdbcTemplate getJdbcTemplate(@Qualifier("pluginDataSource") DataSource dataSource) {
+		return new JdbcTemplate(dataSource);
+	}
+
 }

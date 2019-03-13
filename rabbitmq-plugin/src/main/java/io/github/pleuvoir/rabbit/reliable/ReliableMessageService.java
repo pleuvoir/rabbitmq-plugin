@@ -1,14 +1,14 @@
 package io.github.pleuvoir.rabbit.reliable;
 
-import io.github.pleuvoir.rabbit.reliable.jdbc.RabbitMessageLog;
+import io.github.pleuvoir.rabbit.reliable.jdbc.MessageCommitLog;
 
 public interface ReliableMessageService {
 
-	void insert(RabbitMessageLog log);
+	void insert(MessageCommitLog log);
 
-	RabbitMessageLog findById(String messageId);
+	MessageCommitLog findById(String messageId);
 	
-	Integer updateById(RabbitMessageLog log);
+	Integer updateById(MessageCommitLog log);
 
 	void remove(String messageId);
 }

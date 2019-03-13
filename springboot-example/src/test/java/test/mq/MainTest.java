@@ -6,24 +6,50 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.github.pleuvoir.springboot.example.rabbit.MessagePayload;
-import io.github.pleuvoir.springboot.example.rabbit.NormalMessageProducer;
+import io.github.pleuvoir.springboot.example.rabbit.producer.ExceptionProducer;
+import io.github.pleuvoir.springboot.example.rabbit.producer.NormalMessageProducer;
+import io.github.pleuvoir.springboot.example.rabbit.producer.UnackMessageProducer;
 import test.BaseTest;
 
 public class MainTest extends BaseTest {
+	
 	@Autowired
-	private NormalMessageProducer producer;
+	private NormalMessageProducer normalMessageProducer;
+	@Autowired
+	private ExceptionProducer exceptionProducer;
+	@Autowired
+	private UnackMessageProducer unackMessageProducer;
 
 
 	@Test
-	public void test() throws IOException {
+	public void testNormal() throws IOException {
 
 		MessagePayload messagePayload = new MessagePayload();
 		messagePayload.setPayload(String.valueOf(System.identityHashCode(this)));
 
-		producer.send(messagePayload);
+		normalMessageProducer.send(messagePayload);
 		
+	}
+	
+	@Test
+	public void testException() throws IOException {
+
+		MessagePayload messagePayload = new MessagePayload();
+		messagePayload.setPayload(String.valueOf(System.identityHashCode(this)));
+
+		exceptionProducer.send(messagePayload);
 		
-		System.in.read();
+	}
+	
+	
+	@Test
+	public void testUnack() throws IOException {
+
+		MessagePayload messagePayload = new MessagePayload();
+		messagePayload.setPayload(String.valueOf(System.identityHashCode(this)));
+
+		unackMessageProducer.send(messagePayload);
+		
 	}
 
 }

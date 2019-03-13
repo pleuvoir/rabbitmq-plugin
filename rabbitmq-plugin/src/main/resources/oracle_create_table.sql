@@ -1,4 +1,4 @@
-create table rabbitmq_message_log
+create table message_commit_log
 (
   id                VARCHAR2(32 CHAR) primary key,
   status            VARCHAR2(2 CHAR),

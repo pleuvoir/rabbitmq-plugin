@@ -28,12 +28,13 @@ public class PluginDataSourceConfig {
 
 	private String validationQuery;
 
-	public static PluginDataSourceConfig defaultConfig() {
+	// FOR TESTING
+	public static PluginDataSourceConfig mockConfig() {
 		PluginDataSourceConfig pluginDataSourceConfig = new PluginDataSourceConfig();
 		pluginDataSourceConfig.setJdbcDriverClass("oracle.jdbc.OracleDriver");
-		pluginDataSourceConfig.setJdbcURL("jdbc:oracle:thin:@127.0.0.1:1521:orcl");
-		pluginDataSourceConfig.setJdbcUser("scott");
-		pluginDataSourceConfig.setJdbcPassword("tiger");
+		pluginDataSourceConfig.setJdbcURL("jdbc:oracle:thin:@192.168.100.8:1521:cacplat");
+		pluginDataSourceConfig.setJdbcUser("auction_test");
+		pluginDataSourceConfig.setJdbcPassword("auction_test");
 		pluginDataSourceConfig.setInitialSize(1);
 		pluginDataSourceConfig.setMaxActive(3);
 		pluginDataSourceConfig.setMinIdle(1);

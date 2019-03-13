@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
-import io.github.pleuvoir.rabbit.reliable.jdbc.RabbitMessageLog;
+import io.github.pleuvoir.rabbit.reliable.jdbc.MessageCommitLog;
 import io.github.pleuvoir.rabbit.utils.Generator;
 import io.github.pleuvoir.test.BaseTest;
 
@@ -23,13 +23,13 @@ public class ReliableMessageServiceTest extends BaseTest {
 	public void initDBTest() {
 
 		String messageId = Generator.nextUUID();
-		RabbitMessageLog log = new RabbitMessageLog();
+		MessageCommitLog log = new MessageCommitLog();
 		log.setId(messageId);
 		log.setStatus("0");
 		log.setCreateTime(LocalDateTime.now());
 		reliableMessageService.insert(log);
 
-		RabbitMessageLog preLog;
+		MessageCommitLog preLog;
 		preLog = reliableMessageService.findById(messageId);
 		Assert.assertNotNull(preLog);
 		Assert.assertEquals(messageId, preLog.getId());
@@ -41,7 +41,7 @@ public class ReliableMessageServiceTest extends BaseTest {
 		preLog.setUpdateTime(LocalDateTime.now());
 		reliableMessageService.updateById(preLog);
 
-		RabbitMessageLog afterLog = reliableMessageService.findById(messageId);
+		MessageCommitLog afterLog = reliableMessageService.findById(messageId);
 
 		Assert.assertNotNull(afterLog);
 		Assert.assertEquals(afterLog.getId(), preLog.getId());
