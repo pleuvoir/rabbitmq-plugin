@@ -7,13 +7,13 @@
 @echo.
 @echo off
 
-@title rabbitmq-plugin version update
+@title rabbitmq-plugin deploy
 @color 0a
 
 rem  Please execute command in local directory.
 
-call mvn -N versions:update-child-modules
-call mvn versions:set -DnewVersion=1.0.2
-call mvn versions:commit
+call mvn clean deploy -DskipTests -P release
+
+pause
 
 pause
