@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import io.github.pleuvoir.rabbit.reliable.ExcuteWithTransaction;
+import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
 
 @Service
@@ -39,12 +40,26 @@ public class JDBCExcuteWithTransaction implements ExcuteWithTransaction {
 		}
 
 		if (prevMessageLog.getStatus().equals(MessageCommitLog.CONSUMER_SUCCESS)) {
-			LOGGER.warn("*[messageId={}] 消息日志表明，此消息已经消费成功，可能是应答时出现故障，此次消息被忽略。", messageId);
+			LOGGER.warn("*[messageId={}] 消息已经消费成功，可能是应答时出现故障，此次消息被忽略。", messageId);
 			return;
 		}
 
+		if (prevMessageLog.getVersion() >= prevMessageLog.getMaxRetry()) {
+			LOGGER.warn("*[messageId={}] 消息重试次数{}已超过最大重试次数{}，消息最终丢弃。", messageId, prevMessageLog.getVersion(),
+					prevMessageLog.getMaxRetry());
+			return;
+		}
+		
 		// 执行业务
-		callBack.doInTransaction();
+		try {
+			callBack.doInTransaction();
+		} catch (Exception e) {
+			prevMessageLog.setUpdateTime(LocalDateTime.now());
+			prevMessageLog.setStatus(MessageCommitLog.CONSUMER_FAIL);
+			reliableMessageService.updateById(prevMessageLog);
+			LOGGER.info("*[messageId={}] 业务异常，已更新消息日志为消费失败。", messageId);
+			throw e;
+		}
 
 		prevMessageLog.setUpdateTime(LocalDateTime.now());
 		prevMessageLog.setStatus(MessageCommitLog.CONSUMER_SUCCESS);
@@ -53,9 +68,4 @@ public class JDBCExcuteWithTransaction implements ExcuteWithTransaction {
 		LOGGER.info("*[messageId={}] 已更新消息日志为成功。", messageId);
 	}
 
-	@FunctionalInterface
-	public interface RabbitConsumeCallBack {
-		void doInTransaction() throws Exception;
-	}
-	
 }

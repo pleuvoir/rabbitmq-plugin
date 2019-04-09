@@ -23,11 +23,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.fastjson.JSON;
 
 import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
 import io.github.pleuvoir.base.kit.PropertiesWrap;
 import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
 import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCReliableMessageService;
+import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
 import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueueHelper;
@@ -61,11 +63,14 @@ public class RabbitMQPluginConfiguration {
 	private long minEvictableIdleTimeMillis;
 	private String validationQuery;
 
+	private final PublishTemplateConfig publishTemplateConfig = new PublishTemplateConfig();
+	
 	/**
 	 * 加载配置文件
 	 */
 	public void setLocation(String location) throws IOException {
 		PropertiesWrap config = PropertiesLoadUtil.pathToProWrap(location);
+		
 		rabbitmqHost = config.getString("rabbitmq.host");
 		rabbitmqPort = config.getInteger("rabbitmq.port", 5672);
 		rabbitmqVirtualHost = config.getString("rabbitmq.virtualHost", "/");
@@ -91,6 +96,9 @@ public class RabbitMQPluginConfiguration {
 		Assert.notNull(jdbcUser, "jdbcUser must be non-null.");
 		Assert.notNull(jdbcPassword, "jdbcPassword must be non-null.");
 		Assert.notNull(validationQuery, "validationQuery must be non-null.");
+		
+		publishTemplateConfig
+				.setMaxRetry(config.getInteger("rabbitmq.consumer.max-retry", RabbitConst.DEFAULT_MAX_RETRY));
 	}
 
 	/**
@@ -133,7 +141,10 @@ public class RabbitMQPluginConfiguration {
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@Bean(name = "reliableRabbitTemplate")
 	public ReliableRabbitPublishTemplate reliableRabbitTemplate(ConnectionFactory connectionFactory) {
-		return new ReliableRabbitPublishTemplate(connectionFactory);
+		
+		ReliableRabbitPublishTemplate template = new ReliableRabbitPublishTemplate(connectionFactory);
+		template.setTemplateConfig(publishTemplateConfig);
+		return template;
 	}
 
 	// 可靠消息消费模板

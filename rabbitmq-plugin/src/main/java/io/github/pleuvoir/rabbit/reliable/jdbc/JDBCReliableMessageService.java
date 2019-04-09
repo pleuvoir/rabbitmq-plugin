@@ -32,11 +32,12 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 	public void insert(MessageCommitLog log) {
 		String messageId = log.getId();
 		String status = log.getStatus();
+		Integer maxRetry = log.getMaxRetry();
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("*保存MQ消息记录，messageId：{}，status：{}", messageId, status);
+			LOGGER.debug("*保存MQ消息记录，messageId：{}，status：{}，maxRetry：{}", messageId, status, maxRetry);
 		}
-		tpl.update("insert into message_commit_log (ID, STATUS, CREATE_TIME) values (?, ?, ?)",
-				new Object[]{messageId, status, log.getCreateTime()});
+		tpl.update("insert into message_commit_log (ID, STATUS, MAX_RETRY, CREATE_TIME) values (?, ?, ?,?)",
+				new Object[]{messageId, status, maxRetry, log.getCreateTime()});
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 		}
 
 		List<MessageCommitLog> result = tpl.query(
-				"select id,status,create_time,update_time from message_commit_log where id = ?",
+				"select id,status,create_time,update_time,max_retry,version from message_commit_log where id = ?",
 				new Object[]{messageId}, new RowMapper<MessageCommitLog>() {
 					@Override
 					public MessageCommitLog mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -61,6 +62,8 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 						if (updateTime != null) {
 							log.setCreateTime(updateTime.toLocalDateTime());
 						}
+						log.setMaxRetry(rs.getInt("max_retry"));
+						log.setVersion(rs.getInt("version"));
 						return log;
 					}
 				});
@@ -83,12 +86,12 @@ public class JDBCReliableMessageService implements ReliableMessageService, Initi
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("*更新MQ消息记录，messageId：{}，status：{}", messageId, status);
 		}
-		int update = tpl.update("update message_commit_log set status = ? , update_time = ? where id = ?",
+		int update = tpl.update("update message_commit_log set version = version + 1 , status = ? , update_time = ? where id = ?",
 				new Object[]{status, updateTime, messageId});
 		if (update == 0) {
 			throw new RuntimeException(String.format("更新MQ消息记录失败，messageId：%s，status：%s", messageId, status));
 		}
-		return null;
+		return update;
 	}
 
 	// 创建表操作无需回滚

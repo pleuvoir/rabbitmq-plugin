@@ -3,10 +3,12 @@ package io.github.pleuvoir.rabbit.reliable.jdbc;
 import java.time.LocalDateTime;
 
 public class MessageCommitLog {
-	
+
 	public static final String PREPARE_TO_BROKER = "0";
-	
-    public static final String CONSUMER_SUCCESS = "1";
+
+	public static final String CONSUMER_SUCCESS = "1";
+
+	public static final String CONSUMER_FAIL = "2";
 
 	private String id; // 消息编号
 
@@ -16,10 +18,14 @@ public class MessageCommitLog {
 
 	private String status; // 消息投递状态
 
+	private Integer version; // 版本号
+
+	private Integer maxRetry; // 最大重试次数
 
 	public MessageCommitLog() {
 		super();
 	}
+
 
 	public MessageCommitLog(String id, LocalDateTime createTime, LocalDateTime updateTime, String status) {
 		this.id = id;
@@ -50,6 +56,14 @@ public class MessageCommitLog {
 		this.createTime = createTime;
 	}
 
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -58,12 +72,21 @@ public class MessageCommitLog {
 		this.status = status;
 	}
 
-	public LocalDateTime getUpdateTime() {
-		return updateTime;
+	public Integer getVersion() {
+		return version;
 	}
 
-	public void setUpdateTime(LocalDateTime updateTime) {
-		this.updateTime = updateTime;
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
+
+	public Integer getMaxRetry() {
+		return maxRetry;
+	}
+
+	public void setMaxRetry(Integer maxRetry) {
+		this.maxRetry = maxRetry;
+	}
+
 
 }

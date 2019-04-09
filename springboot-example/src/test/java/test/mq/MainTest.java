@@ -32,13 +32,14 @@ public class MainTest extends BaseTest {
 	}
 	
 	@Test
-	public void testException() throws IOException {
+	public void testException() throws IOException, InterruptedException {
 
 		MessagePayload messagePayload = new MessagePayload();
 		messagePayload.setPayload(String.valueOf(System.identityHashCode(this)));
 
 		exceptionProducer.send(messagePayload);
 		
+		Thread.currentThread().join();
 	}
 	
 	

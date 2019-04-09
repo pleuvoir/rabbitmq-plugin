@@ -1,5 +1,7 @@
 package io.github.pleuvoir.rabbit.reliable.template;
 
+import java.time.LocalDateTime;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -19,8 +21,11 @@ import io.github.pleuvoir.rabbit.utils.Generator;
 public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(ReliableRabbitPublishTemplate.class);
-	
-	@Autowired ReliableMessageService reliableMessageService;
+
+	@Autowired 
+	private ReliableMessageService reliableMessageService;
+
+	private PublishTemplateConfig templateConfig;
 
 	public ReliableRabbitPublishTemplate(ConnectionFactory connectionFactory) {
 		super(connectionFactory);
@@ -34,12 +39,34 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 				MessageProperties messageProperties = message.getMessageProperties();
 				String messageId = Generator.nextUUID();
 				messageProperties.setMessageId(messageId);
-				reliableMessageService.insert(MessageCommitLog.buildPrepareMessage(messageId));
+
+				MessageCommitLog log = build(messageId, templateConfig.getMaxRetry());
+
+				reliableMessageService.insert(log);
+
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
 				}
+
 				return message;
 			}
 		});
 	}
+
+
+	private MessageCommitLog build(String messageId, int maxRetry) {
+		MessageCommitLog log = new MessageCommitLog();
+		log.setId(messageId);
+		log.setVersion(0);
+		log.setStatus(MessageCommitLog.PREPARE_TO_BROKER);
+		log.setCreateTime(LocalDateTime.now());
+		log.setMaxRetry(maxRetry);
+		return log;
+	}
+
+
+	public void setTemplateConfig(PublishTemplateConfig templateConfig) {
+		this.templateConfig = templateConfig;
+	}
+
 }
