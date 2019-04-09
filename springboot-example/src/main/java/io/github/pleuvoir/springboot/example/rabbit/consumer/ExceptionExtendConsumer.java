@@ -31,7 +31,7 @@ public class ExceptionExtendConsumer extends AbstractRabbitConsumeTemplate {
 
 	@Override
 	protected boolean enableExceptionRetry() {
-		return Boolean.FALSE;
+		return Boolean.TRUE;
 	}
 
 	@Override

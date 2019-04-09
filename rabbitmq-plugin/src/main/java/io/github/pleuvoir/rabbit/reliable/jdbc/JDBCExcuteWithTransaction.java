@@ -6,9 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
 import io.github.pleuvoir.rabbit.reliable.ExcuteWithTransaction;
@@ -22,7 +26,10 @@ public class JDBCExcuteWithTransaction implements ExcuteWithTransaction {
 	
 	@Autowired ReliableMessageService reliableMessageService;
 	
-	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	@Autowired
+	private DataSourceTransactionManager txManager;
+	
+	//@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	@Override
 	public void actualExcute(RabbitConsumeCallBack callBack, String messageId) throws Exception {
 		
@@ -50,10 +57,17 @@ public class JDBCExcuteWithTransaction implements ExcuteWithTransaction {
 			return;
 		}
 		
+		
+		// 开启事物
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus txStatus = txManager.getTransaction(def);
 		// 执行业务
 		try {
 			callBack.doInTransaction();
+			txManager.commit(txStatus);
 		} catch (Exception e) {
+			txManager.rollback(txStatus);
 			prevMessageLog.setUpdateTime(LocalDateTime.now());
 			prevMessageLog.setStatus(MessageCommitLog.CONSUMER_FAIL);
 			reliableMessageService.updateById(prevMessageLog);
