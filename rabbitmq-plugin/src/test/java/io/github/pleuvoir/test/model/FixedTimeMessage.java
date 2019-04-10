@@ -4,15 +4,14 @@ import java.time.LocalDateTime;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import io.github.pleuvoir.base.kit.ToJSON;
-import io.github.pleuvoir.rabbit.support.producer.MQMessage;
+import io.github.pleuvoir.rabbit.MQMessage;
 
 /**
  * 定时消息
  * @author pleuvoir
  *
  */
-public class FixedTimeMessage extends MQMessage implements ToJSON {
+public class FixedTimeMessage extends MQMessage{
 
 	/**
 	 * 编号

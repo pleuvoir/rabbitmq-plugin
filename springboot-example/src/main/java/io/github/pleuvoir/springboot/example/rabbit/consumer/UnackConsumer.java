@@ -31,7 +31,7 @@ import io.github.pleuvoir.springboot.example.service.PubParamService;
 )
 
 @Service
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class UnackConsumer {
 
 	private static Logger logger = LoggerFactory.getLogger(UnackConsumer.class);
@@ -56,7 +56,7 @@ public class UnackConsumer {
 			try {
 				rabbitConsumeTemplate.excute(() -> {
 					pubParamService.saveAndUpdate9999();
-				}, message, channel);
+				}, false, message, channel);
 
 			} catch (Throwable e) {
 				if (e instanceof LiveBeginException) {

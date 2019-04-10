@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.support.creator;
+package io.github.pleuvoir.rabbit.extension;
 
 public class FixedTimeDeclareException extends Exception {
 

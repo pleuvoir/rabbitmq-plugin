@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>
 			<artifactId>rabbitmq-plugin</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3</version>
 		</dependency>
 
 
@@ -103,11 +103,11 @@
 			<artifactId>mybatis-plus</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>oracle</groupId>
 			<artifactId>ojdbc8</artifactId>
 			<version>${ojdbc8.version}</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- RabbitMQ -->
 	<!-- 	<dependency>

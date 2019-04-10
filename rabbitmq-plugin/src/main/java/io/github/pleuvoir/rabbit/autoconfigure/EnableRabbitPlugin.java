@@ -7,10 +7,12 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+import io.github.pleuvoir.rabbit.RabbitConst;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(EnableRabbitMQPluginRegistrar.class)
-public @interface EnableRabbitMQPlugin {
+@Import(EnableRabbitPluginRegistrar.class)
+public @interface EnableRabbitPlugin {
 
 	/**
 	 * this is plugin name, it must be no-empty value.
@@ -18,8 +20,8 @@ public @interface EnableRabbitMQPlugin {
 	String name() default "rabbitmq-plugin";
 
 	/**
-	 * the location of resource file.
+	 * 最大重试次数
 	 */
-	String location() default "rabbitmq.properties";
+	int maxRetry() default RabbitConst.DEFAULT_MAX_RETRY;
 
 }

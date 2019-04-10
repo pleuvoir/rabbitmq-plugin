@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PublishTemplateConfig {
 
-	private Integer maxRetry; // 最大重试次数
-
+	/**
+	 *  最大重试次数
+	 */
+	private Integer maxRetry;
 }

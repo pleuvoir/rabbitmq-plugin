@@ -15,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
 import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
 import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
 
+@Repository("jdbcMessageReposity")
 public class JDBCMessageLogReposity implements MessageLogReposity, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCMessageLogReposity.class);

@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.github.pleuvoir.rabbit.support.producer.MQMessageProducer;
+import io.github.pleuvoir.rabbit.MQMessageProducer;
 import io.github.pleuvoir.springboot.example.rabbit.MessagePayload;
 import io.github.pleuvoir.springboot.example.rabbit.RabbitConstants;
 

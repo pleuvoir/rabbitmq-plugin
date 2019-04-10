@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.support.producer;
+package io.github.pleuvoir.rabbit;
 
 public interface MQMessageProducer<M extends MQMessage> {
 

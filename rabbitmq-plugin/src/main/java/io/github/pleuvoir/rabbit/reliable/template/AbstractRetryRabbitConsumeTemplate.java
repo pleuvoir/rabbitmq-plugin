@@ -7,10 +7,19 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rabbitmq.client.Channel;
+import io.github.pleuvoir.rabbit.RabbitConst;
 
 import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 
-public abstract class AbstractRabbitConsumeTemplate {
+/**
+ * 支持重试的消费者模板，当消费异常时会自动重试多次，直到最大重试次数为止
+ * 
+ * <p>
+ * 重试次数取决于 rabbitmq.consumer-exception-retry.max 的配置，如果没有配置此参数，则默认为{@link RabbitConst #DEFAULT_MAX_RETRY}
+ * <p>
+ *
+ */
+public abstract class AbstractRetryRabbitConsumeTemplate {
 
 	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -23,23 +32,18 @@ public abstract class AbstractRabbitConsumeTemplate {
 			RabbitConsumeCallBack callBack = new RabbitConsumeCallBack() {
 				@Override
 				public void doInTransaction() throws Exception {
-					handler(message);
+					handler(new String(message.getBody()));
 				}
 			};
-			consumeTemplate.excute(callBack, enableExceptionRetry(), message, channel);
+			consumeTemplate.excute(callBack, true, message, channel);
 		} catch (Throwable e) {
 			exceptionHandler(message, e);
 		}
 	}
 
-	protected abstract void handler(Message message);
+	protected abstract void handler(String data);
 
 	protected void exceptionHandler(Message message, Throwable e) {
 	};
 	
-	/**
-	 * 出现异常时是否重试，注意：如果该异常无法恢复，可能会导致活锁，请合理设置重试次数
-	 * 
-	 */
-	protected abstract boolean enableExceptionRetry();
 }

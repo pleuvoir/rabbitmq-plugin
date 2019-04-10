@@ -45,7 +45,7 @@ public class NormalConsumer {
 		try {
 			rabbitConsumeTemplate.excute(() -> {
 				pubParamService.saveAndUpdate9999();
-			}, message, channel);
+			}, false, message, channel);
 
 		} catch (Throwable e) {
 			if (e instanceof LiveBeginException) {
