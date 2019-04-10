@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.reliable.jdbc;
+package io.github.pleuvoir.test.config;
 
 /**
  * 插件数据源配置

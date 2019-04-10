@@ -38,7 +38,7 @@ public abstract class AbstractRabbitConsumeTemplate {
 	};
 	
 	/**
-	 * 出现异常时是否重试，注意：如果该异常无法恢复，可能会导致活锁
+	 * 出现异常时是否重试，注意：如果该异常无法恢复，可能会导致活锁，请合理设置重试次数
 	 * 
 	 */
 	protected abstract boolean enableExceptionRetry();

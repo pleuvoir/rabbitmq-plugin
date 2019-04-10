@@ -13,6 +13,7 @@
 	<properties>
 		<jdk.version>1.8</jdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lombok.version>1.18.2</lombok.version>
 		<plugin.base.version>1.0.1</plugin.base.version>
 		<spring.version>5.0.8.RELEASE</spring.version>
 		<junit.version>4.12</junit.version>
@@ -35,6 +36,12 @@
 			<artifactId>ojdbc8</artifactId>
 			<version>${ojdbc8.version}</version>
 		</dependency> -->
+			<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- plugin base -->
 		<dependency>
 			<groupId>io.github.pleuvoir</groupId>

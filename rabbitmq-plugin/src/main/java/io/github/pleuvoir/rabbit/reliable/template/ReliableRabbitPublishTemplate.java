@@ -14,8 +14,8 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
-import io.github.pleuvoir.rabbit.reliable.jdbc.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
 import io.github.pleuvoir.rabbit.utils.Generator;
 
 public class ReliableRabbitPublishTemplate extends RabbitTemplate {
@@ -23,9 +23,13 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 	private final static Logger LOGGER = LoggerFactory.getLogger(ReliableRabbitPublishTemplate.class);
 
 	@Autowired 
-	private ReliableMessageService reliableMessageService;
+	private MessageLogReposity reposity;
 
 	private PublishTemplateConfig templateConfig;
+	
+	public void setTemplateConfig(PublishTemplateConfig templateConfig) {
+		this.templateConfig = templateConfig;
+	}
 
 	public ReliableRabbitPublishTemplate(ConnectionFactory connectionFactory) {
 		super(connectionFactory);
@@ -40,9 +44,16 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 				String messageId = Generator.nextUUID();
 				messageProperties.setMessageId(messageId);
 
-				MessageCommitLog log = build(messageId, templateConfig.getMaxRetry());
-
-				reliableMessageService.insert(log);
+				MessageCommitLog log = MessageCommitLog.builder().
+						createTime(LocalDateTime.now()).
+						id(messageId).
+						body(new String(message.getBody())).
+						status(MessageCommitLog.PREPARE_TO_BROKER).
+						retryCount(0).
+						maxRetry(templateConfig.getMaxRetry()).
+						build();
+				
+				reposity.insert(log);
 
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
@@ -51,22 +62,6 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 				return message;
 			}
 		});
-	}
-
-
-	private MessageCommitLog build(String messageId, int maxRetry) {
-		MessageCommitLog log = new MessageCommitLog();
-		log.setId(messageId);
-		log.setVersion(0);
-		log.setStatus(MessageCommitLog.PREPARE_TO_BROKER);
-		log.setCreateTime(LocalDateTime.now());
-		log.setMaxRetry(maxRetry);
-		return log;
-	}
-
-
-	public void setTemplateConfig(PublishTemplateConfig templateConfig) {
-		this.templateConfig = templateConfig;
 	}
 
 }

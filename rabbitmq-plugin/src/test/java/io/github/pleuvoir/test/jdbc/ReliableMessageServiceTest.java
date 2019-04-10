@@ -7,15 +7,15 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.pleuvoir.rabbit.reliable.ReliableMessageService;
-import io.github.pleuvoir.rabbit.reliable.jdbc.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
 import io.github.pleuvoir.rabbit.utils.Generator;
 import io.github.pleuvoir.test.BaseTest;
 
 public class ReliableMessageServiceTest extends BaseTest {
 
 	@Autowired
-	ReliableMessageService reliableMessageService;
+	MessageLogReposity reliableMessageService;
 
 
 	@Test
@@ -37,9 +37,6 @@ public class ReliableMessageServiceTest extends BaseTest {
 		Assert.assertNotNull(preLog.getCreateTime());
 		Assert.assertNull(preLog.getUpdateTime());
 
-		preLog.setStatus("1");
-		preLog.setUpdateTime(LocalDateTime.now());
-		reliableMessageService.updateById(preLog);
 
 		MessageCommitLog afterLog = reliableMessageService.findById(messageId);
 
