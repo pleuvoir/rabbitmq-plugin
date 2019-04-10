@@ -50,10 +50,10 @@ public class JDBCExcuteWithTransaction {
 			return;
 		}
 
-		if (prevMessageLog.getRetryCount() > prevMessageLog.getMaxRetry()) {
+		if (prevMessageLog.getRetryCount() >= prevMessageLog.getMaxRetry()) {
 			changeToFail(messageId);
-			LOGGER.warn("*[messageId={}] 消息第{}次重试，消息内容{}，重试已超过最大重试次数{}，此次消息不进行处理，已更新消息日志为消费失败。", messageId,
-					prevMessageLog.getRetryCount(), prevMessageLog.getBody(), prevMessageLog.getMaxRetry());
+			LOGGER.warn("*[messageId={}] 消息第{}次重试，消息内容{}，重试已超过最大次数{}，此次消息不进行处理，已更新消息日志为消费失败。", messageId,
+					prevMessageLog.getRetryCount() + 1, prevMessageLog.getBody(), prevMessageLog.getMaxRetry());
 			return;
 		}
 

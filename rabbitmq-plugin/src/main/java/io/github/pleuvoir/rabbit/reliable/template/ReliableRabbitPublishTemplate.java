@@ -49,7 +49,7 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 						id(messageId).
 						body(new String(message.getBody())).
 						status(MessageCommitLog.PREPARE_TO_BROKER).
-						retryCount(0).
+						retryCount(-1).
 						maxRetry(templateConfig.getMaxRetry()).
 						build();
 				
