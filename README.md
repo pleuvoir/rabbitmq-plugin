@@ -89,10 +89,6 @@ private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; // 可靠消息消�
 
 项目本身针对可靠消息的保障，尽量不侵扰`RabbitMQ`和`Spring`的集成和使用。因而`RabbitMQ`本身配置应当由应用端本身提供，数据源和数据库事务亦是如此。
 
-### Profiles
-
-如果项目使用  `Profiles` 来管理 spring 的环境，如  `Environment().setActiveProfiles("dev")` ，自动配置支持使用 `[profile]` 替换环境修饰符。即如果您使用了 `@EnableRabbitMQPlugin(location = "config/[profile]/rabbitmq-[profile].properties")` 进行配置，插件会寻找   `config/dev/rabbitmq-dev.properties` 文件，确保文件存在即可。使用 xml 注册的方式，不受此特性的影响，请配置实际的文件名称。
-
 ## TODO LIST
 
 - [ ] 消费成功的消息定时删除
