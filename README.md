@@ -35,16 +35,7 @@
 </dependency>
 ```
 
-### 2. 配置文件
-
-接着我们需要准备一份配置文件，它看起来是这样的，文件的名称我们先假定为 `rabbitmq.properties`
-
-```java
-# 消息消费异常时最大重试次数，不设置默认为3次，0代表不重试
-rabbitmq.consumer-exception-retry.max=0
-```
-
-### 3. 使用Spring进行管理
+### 2. 使用Spring进行管理
 
 
 如果是使用注解的项目，建议使用自动配置。就像这样：
@@ -56,9 +47,6 @@ public class PluginConfiguration {
 
 }
 ```
-
-只需在配置类中声明 `@EnableRabbitMQPlugin` 即可，当然这是使用默认配置。 `EnableRabbitMQPlugin` 注解包含属性  `location` 表示需要加载的配置文件位置, `location` 可以不声明，默认为 classpath 下的 `rabbitmq.properties` 文件。 
-
 
 ### 4. 发送消息模板
 
