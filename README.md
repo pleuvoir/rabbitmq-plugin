@@ -70,7 +70,7 @@ private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; // 可靠消息消�
 
 ### 解决的问题以及问题出现的原因
 
-常规开发中，RabbitMQ有两种应答模式，自动应答和手动应答。然而两种模式都存在一些弊端：故在对消息的可靠性保障上我们一般选用手动应答。
+常规开发中，RabbitMQ有两种应答模式，自动应答和手动应答。然而两种模式都存在一些弊端：
 
 - 自动应答
 
