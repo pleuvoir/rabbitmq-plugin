@@ -28,7 +28,7 @@ import io.github.pleuvoir.springboot.example.service.PubParamService;
 		key = RabbitConstants.Exception.ROUTING_KEY)
 )
 
-@Service
+//@Service
 public class ExceptionConsumer {
 
 	private static Logger logger = LoggerFactory.getLogger(ExceptionConsumer.class);

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rabbitmq.client.Channel;
 
+import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction;
-import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction.RabbitConsumeCallBack;
 
 public class ReliableRabbitConsumeTemplate {
 
@@ -44,7 +44,7 @@ public class ReliableRabbitConsumeTemplate {
 	 * <p>
 	 * 
 	 * @param callBack	待执行的业务操作，此业务操作将在数据库事务中执行
-	 * @param requeue	出现异常时是否重新投递该消息，使用不当会有死循环的可能
+	 * @param requeue	出现异常时是否重新投递该消息，使用不当会有活锁的可能
 	 * @param message
 	 * @param channel
 	 * @throws Throwable 
@@ -76,8 +76,8 @@ public class ReliableRabbitConsumeTemplate {
 	/**
 	 * 记录异常
 	 */
-	public void logException(Throwable e, Message message) {
+	public void logException(Message message, Throwable e) {
 		LOGGER.warn("*[messageId={}] 消息处理失败，异常信息[{}]，消息内容 ：{}", message.getMessageProperties().getMessageId(),
-				e.getMessage(), new String(message.getBody()));
+				e.getMessage(), new String(message.getBody()), e);
 	}
 }

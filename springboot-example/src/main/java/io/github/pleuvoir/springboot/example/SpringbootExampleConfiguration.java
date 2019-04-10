@@ -7,8 +7,11 @@ import javax.sql.DataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -29,10 +32,10 @@ import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitMQPlugin;
 @EnableTransactionManagement
 @MapperScan("io.github.pleuvoir.springboot.example.dao")
 
-
+@EnableRabbit
+@AutoConfigureAfter({RabbitAutoConfiguration.class})
 @EnableRabbitMQPlugin(location = "config/rabbitmq-[profile].properties")  // 看这里，启用
 public class SpringbootExampleConfiguration {
-
 	
 	/*
 	 * 
@@ -43,7 +46,6 @@ public class SpringbootExampleConfiguration {
 	 * 
 	 * 提示：在spring中如果需要同时使用手动确认和自动确认模式，是需要使用两个监听工厂的。这里我们使用手动确认模式来测试我们的可靠消息处理框架
 	 */
-	
 	
 	@Bean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
@@ -63,8 +65,6 @@ public class SpringbootExampleConfiguration {
 		factory.setPrefetchCount(250);
 		return factory;
 	}
-
-	
 	
 	
 	/**
