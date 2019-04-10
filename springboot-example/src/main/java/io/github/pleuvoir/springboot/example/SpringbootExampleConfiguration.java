@@ -7,7 +7,6 @@ import javax.sql.DataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -26,15 +25,14 @@ import com.baomidou.mybatisplus.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
 
-import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitMQPlugin;
+import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitPlugin;
 
 @Configuration
 @EnableTransactionManagement
 @MapperScan("io.github.pleuvoir.springboot.example.dao")
 
-@EnableRabbit
 @AutoConfigureAfter({RabbitAutoConfiguration.class})
-@EnableRabbitMQPlugin(location = "config/rabbitmq-[profile].properties")  // 看这里，启用
+@EnableRabbitPlugin(location = "config/application-[profile].properties")  // 看这里，启用
 public class SpringbootExampleConfiguration {
 	
 	/*
@@ -89,6 +87,7 @@ public class SpringbootExampleConfiguration {
 		return factoryBean;
 	}
 
+	// 数据源和事务管理器 必须的
 	@Bean("transactionManager")
 	public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource) {
 		return new DataSourceTransactionManager(dataSource);

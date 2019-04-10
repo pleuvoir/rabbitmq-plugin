@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rabbitmq.client.Channel;
 
+import io.github.pleuvoir.rabbit.RabbitConsumeException;
 import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCExcuteWithTransaction;
 
@@ -18,24 +19,6 @@ public class ReliableRabbitConsumeTemplate {
 	@Autowired
 	private JDBCExcuteWithTransaction reliableExcuteWithTransaction;
 
-
-	private boolean defaultRequeueStrategy = false;
-	
-	/**
-	 * 可靠消息处理模板
-	 * <p>
-	 * 正常时会确认应答 ack， 当出现业务异常或者其它不可预知的错误时，程序会向 MQ broker 发送 nack 应答
-	 * <p>
-	 * 
-	 * @param callBack	待执行的业务操作，此业务操作将在数据库事务中执行
-	 * @param message
-	 * @param channel
-	 * @throws Throwable 
-	 */
-	public void excute(RabbitConsumeCallBack callBack, Message message, Channel channel) throws Throwable {
-		this.excute(callBack, defaultRequeueStrategy, message, channel);
-	}
-	
 	/**
 	 * 可靠消息处理模板
 	 * <p>
@@ -57,17 +40,17 @@ public class ReliableRabbitConsumeTemplate {
 		
 		try {
 			reliableExcuteWithTransaction.actualExcute(callBack, messageId);
-		} catch (Throwable e) {
-			LOGGER.warn("*[messageId={}] 业务执行失败，已回滚。", messageId, e);
-			channel.basicNack(deliveryTag, false, requeue);
+			channel.basicAck(deliveryTag, false);
+		} catch (RabbitConsumeException e) {
 			if (requeue) {
-				LOGGER.info("*[messageId={}] 消息已拒绝，并重新投递给其他消费者。", messageId);
+				channel.basicNack(deliveryTag, false, true);
+				LOGGER.info("*[messageId={}] MQ broker消息已拒绝，并重新投递给其他消费者。", messageId);
 			} else {
-				LOGGER.info("*[messageId={}] 消息已拒绝。", messageId);
+				channel.basicNack(deliveryTag, false, false);
+				LOGGER.info("*[messageId={}] MQ broker消息已拒绝。", messageId);
 			}
 			throw e;
 		}
-		channel.basicAck(deliveryTag, false);
 	}
 
 	

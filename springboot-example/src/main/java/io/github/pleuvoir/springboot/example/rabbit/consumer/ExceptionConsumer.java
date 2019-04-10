@@ -45,10 +45,10 @@ public class ExceptionConsumer {
 		
 		try {
 			rabbitConsumeTemplate.excute(() -> {
-				
+
 				pubParamService.saveAndUpdate9999WithException();
-				
-			}, message, channel);
+
+			}, false, message, channel);
 
 		} catch (Throwable e) {
 			if (e instanceof LiveBeginException) {

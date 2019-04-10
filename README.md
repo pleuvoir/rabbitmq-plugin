@@ -53,22 +53,9 @@
 接着我们需要准备一份配置文件，它看起来是这样的，文件的名称我们先假定为 `rabbitmq.properties`
 
 ```xml
-rabbitmq.host=39.105.110.40
-rabbitmq.port=5672
-rabbitmq.virtualHost=/
-rabbitmq.username=guest
-rabbitmq.password=guest
-
-datasource.driver=oracle.jdbc.OracleDriver
-datasource.url=jdbc:oracle:thin:@127.0.0.1:1521:cacplat
-datasource.username=test
-datasource.password=test
-datasource.validation-query=SELECT 1 FROM DUAL
+# 消息消费异常时最大重试次数，不设置默认为3次，0代表不重试
+rabbitmq.consumer-exception-retry.max=0
 ```
-
-其中`rabbitmq`前缀的配置为RabbitMQ自身的配置，用于创建连接工厂。
-
-`datasource`前缀的配置为数据源配置，一般配置的是和业务表数据源一致。实际上会在此数据源对应的数据库中创建表。
 
 
 ### 3. 使用Spring进行管理
@@ -77,7 +64,7 @@ datasource.validation-query=SELECT 1 FROM DUAL
 如果是使用注解的项目，建议使用自动配置。就像这样：
 
 ```java
-@EnableRabbitMQPlugin
+@EnableRabbitPlugin
 @Configuration
 public class PluginConfiguration {
 
@@ -112,7 +99,6 @@ private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; // 可靠消息消�
 - [ ] 消费成功的消息定时删除
 - [ ] 未到达Broker的消息定时重投
 - [ ] Mysql支持
-- [ ] STOMP支持
 
 
 ## 开源协议

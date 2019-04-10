@@ -19,34 +19,33 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
 import io.github.pleuvoir.base.kit.PropertiesWrap;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
-import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCMessageLogReposity;
 import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
+import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig.PublishTemplateConfigBuilder;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
 import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueueHelper;
 
 @EnableRabbit
 @ComponentScan({"io.github.pleuvoir.rabbit.reliable"})
-public class RabbitMQPluginConfiguration {
+public class RabbitPluginConfiguration {
 
-	protected static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQPluginConfiguration.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(RabbitPluginConfiguration.class);
 
-	public RabbitMQPluginConfiguration() {
-		LOGGER.info("*rabbitmq-plugin RabbitMQPluginConfiguration loading ...");
-	}
+	final PublishTemplateConfigBuilder publishTemplateConfigBuilder = PublishTemplateConfig.builder();
 
-	private final PublishTemplateConfig publishTemplateConfig = new PublishTemplateConfig();
-	
 	/**
 	 * 加载配置文件
 	 */
 	public void setLocation(String location) throws IOException {
+		LOGGER.info("* rabbitmq-plugin loading ... location=[{}]", location);
 		PropertiesWrap config = PropertiesLoadUtil.pathToProWrap(location);
-		publishTemplateConfig
-				.setMaxRetry(config.getInteger("rabbitmq.consumer.max-retry", RabbitConst.DEFAULT_MAX_RETRY));
+		
+		this.publishTemplateConfigBuilder
+				.maxRetry(config.getInteger("rabbitmq.consumer-exception-retry.max", RabbitConst.DEFAULT_MAX_RETRY));
+
 	}
 
+	
 	// helper
 	@Bean(name = "rabbitAdmin")
 	public RabbitAdmin getRabbitAdmin(RabbitTemplate rabbitTemplate) {
@@ -69,7 +68,7 @@ public class RabbitMQPluginConfiguration {
 	@Bean(name = "reliableRabbitTemplate")
 	public ReliableRabbitPublishTemplate reliableRabbitTemplate(ConnectionFactory connectionFactory) {
 		ReliableRabbitPublishTemplate template = new ReliableRabbitPublishTemplate(connectionFactory);
-		template.setTemplateConfig(publishTemplateConfig);
+		template.setTemplateConfig(this.publishTemplateConfigBuilder.build());
 		return template;
 	}
 
@@ -77,12 +76,6 @@ public class RabbitMQPluginConfiguration {
 	@Bean(name = "reliableRabbitConsumeTemplate")
 	public ReliableRabbitConsumeTemplate reliableRabbitConsumeTemplate() {
 		return new ReliableRabbitConsumeTemplate();
-	}
-
-	// 可靠消息数据库日志支持
-	@Bean(name = "jdbcMessageReposityService")
-	public MessageLogReposity reliableMessageService() {
-		return new JDBCMessageLogReposity();
 	}
 
 	// 定时队列支持

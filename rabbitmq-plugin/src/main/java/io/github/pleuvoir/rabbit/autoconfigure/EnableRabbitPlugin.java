@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Import;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(EnableRabbitMQPluginRegistrar.class)
-public @interface EnableRabbitMQPlugin {
+@Import(EnableRabbitPluginRegistrar.class)
+public @interface EnableRabbitPlugin {
 
 	/**
 	 * this is plugin name, it must be no-empty value.

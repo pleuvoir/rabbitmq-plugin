@@ -8,18 +8,18 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 
 import io.github.pleuvoir.base.autoconfigure.AbstractPluginRegistrar;
-import io.github.pleuvoir.rabbit.RabbitMQPluginConfiguration;
+import io.github.pleuvoir.rabbit.RabbitPluginConfiguration;
 
-public class EnableRabbitMQPluginRegistrar extends AbstractPluginRegistrar {
+public class EnableRabbitPluginRegistrar extends AbstractPluginRegistrar {
 
 	@Override
 	protected Class<? extends Annotation> getEnableAnnotationClass() {
-		return EnableRabbitMQPlugin.class;
+		return EnableRabbitPlugin.class;
 	}
 
 	@Override
 	protected Class<?> defaultConfigurationClass() {
-		return RabbitMQPluginConfiguration.class;
+		return RabbitPluginConfiguration.class;
 	}
 
 	@Override

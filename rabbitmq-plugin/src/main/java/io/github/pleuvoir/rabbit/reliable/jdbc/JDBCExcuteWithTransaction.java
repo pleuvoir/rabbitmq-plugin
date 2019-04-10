@@ -2,6 +2,8 @@ package io.github.pleuvoir.rabbit.reliable.jdbc;
 
 import java.time.LocalDateTime;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
+import io.github.pleuvoir.rabbit.RabbitConsumeException;
 import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
 import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
 import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
@@ -22,12 +25,12 @@ public class JDBCExcuteWithTransaction {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCExcuteWithTransaction.class);
 
-	@Autowired
+	@Resource(name = "jdbcMessageReposity")
 	private MessageLogReposity messageReposity;
 	@Autowired
 	private DataSourceTransactionManager txManager;
 
-	public void actualExcute(RabbitConsumeCallBack callBack, String messageId) throws Exception {
+	public void actualExcute(RabbitConsumeCallBack callBack, String messageId) throws RabbitConsumeException {
 
 		if (StringUtils.isBlank(messageId)) {
 			LOGGER.warn("*messageId 为空，忽略此次消息消费。");
@@ -47,7 +50,7 @@ public class JDBCExcuteWithTransaction {
 			return;
 		}
 
-		if (prevMessageLog.getRetryCount() >= prevMessageLog.getMaxRetry()) {
+		if (prevMessageLog.getRetryCount() > prevMessageLog.getMaxRetry()) {
 			changeToFail(messageId);
 			LOGGER.warn("*[messageId={}] 消息第{}次重试，消息内容{}，重试已超过最大重试次数{}，此次消息不进行处理，已更新消息日志为消费失败。", messageId,
 					prevMessageLog.getRetryCount(), prevMessageLog.getBody(), prevMessageLog.getMaxRetry());
@@ -65,8 +68,9 @@ public class JDBCExcuteWithTransaction {
 			LOGGER.info("*[messageId={}] 已更新消息日志为成功。", messageId);
 		} catch (Throwable e) {
 			txManager.rollback(txStatus);
+			LOGGER.warn("*[messageId={}] 业务执行失败，已回滚。", messageId, e);
 			messageReposity.incrementRetryCount(messageId); // 如果在这里宕机会多重试一次可以接受
-			throw e;
+			throw new RabbitConsumeException(e);
 		}
 	}
 
