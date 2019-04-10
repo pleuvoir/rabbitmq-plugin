@@ -32,7 +32,7 @@ import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitPlugin;
 @MapperScan("io.github.pleuvoir.springboot.example.dao")
 
 @AutoConfigureAfter({RabbitAutoConfiguration.class})
-@EnableRabbitPlugin(location = "config/application-[profile].properties")  // 看这里，启用
+@EnableRabbitPlugin(maxRetry = 5)// 看这里，启用
 public class SpringbootExampleConfiguration {
 	
 	/*

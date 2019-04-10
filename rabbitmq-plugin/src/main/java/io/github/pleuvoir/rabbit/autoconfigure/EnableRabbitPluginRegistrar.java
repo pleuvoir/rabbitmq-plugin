@@ -9,6 +9,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 
 import io.github.pleuvoir.base.autoconfigure.AbstractPluginRegistrar;
 import io.github.pleuvoir.rabbit.RabbitPluginConfiguration;
+import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
 
 public class EnableRabbitPluginRegistrar extends AbstractPluginRegistrar {
 
@@ -25,7 +26,10 @@ public class EnableRabbitPluginRegistrar extends AbstractPluginRegistrar {
 	@Override
 	protected void customize(BeanDefinitionRegistry registry, AnnotationAttributes attributes,
 			BeanDefinitionBuilder definition, BeanFactory beanFactory) {
-		definition.addPropertyValue("location", locationFormat(attributes.getString("location")));
+
+		definition.addPropertyValue("publishTemplateConfigBuilder",
+				PublishTemplateConfig.builder().
+				maxRetry(attributes.getNumber("maxRetry").intValue()));
 	}
 
 }

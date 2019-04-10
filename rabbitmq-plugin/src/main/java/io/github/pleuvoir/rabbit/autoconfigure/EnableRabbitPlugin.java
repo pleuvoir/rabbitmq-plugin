@@ -20,8 +20,8 @@ public @interface EnableRabbitPlugin {
 	String name() default "rabbitmq-plugin";
 
 	/**
-	 * the location of resource file.
+	 * 最大重试次数
 	 */
-	String location() default "rabbitmq.properties";
+	int maxRetry() default RabbitConst.DEFAULT_MAX_RETRY;
 
 }
