@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+import io.github.pleuvoir.rabbit.RabbitConst;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(EnableRabbitPluginRegistrar.class)

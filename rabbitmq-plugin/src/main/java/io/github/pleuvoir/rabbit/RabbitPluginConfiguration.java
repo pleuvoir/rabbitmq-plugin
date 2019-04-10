@@ -19,11 +19,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
 import io.github.pleuvoir.base.kit.PropertiesWrap;
+import io.github.pleuvoir.rabbit.extension.FixedTimeQueueHelper;
 import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
 import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig.PublishTemplateConfigBuilder;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate;
 import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
-import io.github.pleuvoir.rabbit.support.creator.FixedTimeQueueHelper;
 
 @EnableRabbit
 @ComponentScan({"io.github.pleuvoir.rabbit.reliable"})

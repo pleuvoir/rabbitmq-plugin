@@ -1,4 +1,4 @@
-package io.github.pleuvoir.rabbit.support.producer;
+package io.github.pleuvoir.rabbit;
 
 import com.alibaba.fastjson.JSON;
 

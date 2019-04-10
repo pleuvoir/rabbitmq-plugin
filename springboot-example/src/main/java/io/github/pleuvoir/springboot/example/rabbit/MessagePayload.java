@@ -1,6 +1,6 @@
 package io.github.pleuvoir.springboot.example.rabbit;
 
-import io.github.pleuvoir.rabbit.support.producer.MQMessage;
+import io.github.pleuvoir.rabbit.MQMessage;
 
 public class MessagePayload extends MQMessage{
 
