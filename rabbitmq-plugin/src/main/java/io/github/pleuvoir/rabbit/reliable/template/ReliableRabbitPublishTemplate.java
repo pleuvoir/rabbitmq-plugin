@@ -1,7 +1,7 @@
 package io.github.pleuvoir.rabbit.reliable.template;
 
 import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
+import io.github.pleuvoir.rabbit.reliable.MessageLogRepository;
 import io.github.pleuvoir.rabbit.utils.Generator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(ReliableRabbitPublishTemplate.class);
 
-	@Resource(name = "jdbcMessageReposity")
-	private MessageLogReposity reposity;
+	@Resource(name = "jdbcMessageLogRepository")
+	private MessageLogRepository repository;
 
 	private PublishTemplateConfig templateConfig;
 	
@@ -50,8 +50,8 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
                         retryCount(0).
 						maxRetry(templateConfig.getMaxRetry()).
 						build();
-				
-				reposity.insert(log);
+
+                repository.insert(log);
 
                 LOGGER.info("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
 

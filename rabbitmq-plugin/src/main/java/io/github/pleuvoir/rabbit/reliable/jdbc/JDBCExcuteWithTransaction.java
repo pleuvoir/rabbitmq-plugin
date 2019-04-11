@@ -3,7 +3,7 @@ package io.github.pleuvoir.rabbit.reliable.jdbc;
 import io.github.pleuvoir.rabbit.RabbitConsumeException;
 import io.github.pleuvoir.rabbit.RetryStrategy;
 import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
+import io.github.pleuvoir.rabbit.reliable.MessageLogRepository;
 import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,8 +24,8 @@ public class JDBCExcuteWithTransaction {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCExcuteWithTransaction.class);
 
-	@Resource(name = "jdbcMessageReposity")
-	private MessageLogReposity messageReposity;
+	@Resource(name = "jdbcMessageLogRepository")
+	private MessageLogRepository messageLogRepository;
 	@Autowired
 	private DataSourceTransactionManager txManager;
 
@@ -38,7 +38,7 @@ public class JDBCExcuteWithTransaction {
 
 		Assert.notNull(callBack, "业务回调不能为空");
 
-		MessageCommitLog prevMessageLog = messageReposity.findById(messageId);
+		MessageCommitLog prevMessageLog = messageLogRepository.findById(messageId);
 		if (prevMessageLog == null) {
 			LOGGER.warn("*[messageId={}] 未能获取消息日志，忽略此次消息消费。", messageId);
 			return;
@@ -76,7 +76,7 @@ public class JDBCExcuteWithTransaction {
                 LOGGER.warn("*[messageId={}] 业务执行失败，不进行重试，已更新消息日志为消费失败，retryCount={}，maxRetry={}。", messageId, retryCount, maxRetry);
             } else {
                 retryStrategy = RetryStrategy.ENABLE;
-                messageReposity.incrementRetryCount(messageId); // 如果在这里宕机会多重试一次可以接受
+                messageLogRepository.incrementRetryCount(messageId); // 如果在这里宕机会多重试一次可以接受
                 LOGGER.warn("*[messageId={}] 业务执行失败，即将进行第{}次重试。", messageId, retryCount + 1);
             }
             throw new RabbitConsumeException(retryStrategy, e);
@@ -84,11 +84,11 @@ public class JDBCExcuteWithTransaction {
 	}
 
 	private void changeToSuccess(String messageId) {
-		messageReposity.updateMessageLogStatus(messageId, MessageCommitLog.CONSUMER_SUCCESS, LocalDateTime.now());
+        messageLogRepository.updateMessageLogStatus(messageId, MessageCommitLog.CONSUMER_SUCCESS, LocalDateTime.now());
 	}
 
 	private void changeToFail(String messageId) {
-		messageReposity.updateMessageLogStatus(messageId, MessageCommitLog.CONSUMER_FAIL, LocalDateTime.now());
+        messageLogRepository.updateMessageLogStatus(messageId, MessageCommitLog.CONSUMER_FAIL, LocalDateTime.now());
 	}
 
 }

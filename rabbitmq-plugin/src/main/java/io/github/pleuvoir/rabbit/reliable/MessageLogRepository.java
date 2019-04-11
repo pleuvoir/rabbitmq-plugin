@@ -2,7 +2,7 @@ package io.github.pleuvoir.rabbit.reliable;
 
 import java.time.LocalDateTime;
 
-public interface MessageLogReposity {
+public interface MessageLogRepository {
 
 	/**
 	 * 插入一条消息记录
