@@ -34,6 +34,7 @@
 			<groupId>io.github.pleuvoir</groupId>
 			<artifactId>plugin-base</artifactId>
 			<version>${plugin.base.version}</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
@@ -50,6 +51,7 @@
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
 			<version>${spring.rabbit.version}</version>
+			<optional>true</optional>
 		</dependency>
 		<!-- logger -->
 		<dependency>

@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import io.github.pleuvoir.springboot.example.SpringbootExampleLauncher;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @SpringBootTest(classes = SpringbootExampleLauncher.class)
 public abstract class BaseTest {
 

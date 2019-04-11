@@ -45,10 +45,7 @@ public class MainTest extends BaseTest {
 		//Thread.currentThread().join();
 	}
 	
-	public static void main(String[] args) throws IOException {
-		PropertiesWrap config = PropertiesLoadUtil.pathToProWrap("config/rabbitmq-dev.properties");
-		System.out.println(config.getInteger("rabbitmq.consumer.max-retry"));
-	}
+
 	
 	@Test
 	public void testUnack() throws IOException {

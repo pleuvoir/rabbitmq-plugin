@@ -71,7 +71,7 @@ public class JDBCMessageLogReposity implements MessageLogReposity, InitializingB
 						return log;
 					}
 				});
-		return CollectionUtils.isEmpty(result) ? null : result.get(0);
+		return CollectionUtils.isEmpty(result) ? new MessageCommitLog() : result.get(0);
 	}
 
 	@Override
