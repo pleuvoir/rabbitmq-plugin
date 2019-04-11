@@ -17,7 +17,7 @@
 - Spring支持
 - 简单易用
 - 方便的模板
-- 消费侧异常重试机制
+- 异常重试机制
 - 定时消息
 
 ## 快速开始
@@ -61,12 +61,12 @@ private RabbitTemplate rabbitTemplate;
 
 ```java
 @Resource(name = "rabbitTemplate")
-private RabbitTemplate rabbitConsumeTemplate; 
+private RabbitTemplate rabbitTemplate; 
 ```
 
 区别是什么？
 
-可靠消息发送模板发送的消息只能由可靠消息消费模板来处理，普通模版则无此限制。
+可靠消息发送模板发送的消息只能由可靠消息消费模板来处理，这两者是配套使用的缺一不可。
 
 ### 可靠消息消费模板
 
