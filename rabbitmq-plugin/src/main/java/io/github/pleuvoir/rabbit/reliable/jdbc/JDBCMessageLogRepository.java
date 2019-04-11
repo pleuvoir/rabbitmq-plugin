@@ -1,14 +1,7 @@
 package io.github.pleuvoir.rabbit.reliable.jdbc;
 
-import java.nio.charset.Charset;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageLogRepository;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +11,18 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
+import javax.annotation.Resource;
+import java.nio.charset.Charset;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
-@Repository("jdbcMessageReposity")
-public class JDBCMessageLogReposity implements MessageLogReposity, InitializingBean {
+@Repository("jdbcMessageLogRepository")
+public class JDBCMessageLogRepository implements MessageLogRepository, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCMessageLogReposity.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JDBCMessageLogRepository.class);
 
 	@Resource(name = "pluginJdbcTemplate")
 	private JdbcTemplate tpl;
@@ -80,7 +78,6 @@ public class JDBCMessageLogReposity implements MessageLogReposity, InitializingB
 	}
 
 
-	// 创建表操作无需回滚
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Integer count = tpl.queryForObject("SELECT COUNT(*) FROM User_Tables WHERE table_name = 'MESSAGE_COMMIT_LOG'",

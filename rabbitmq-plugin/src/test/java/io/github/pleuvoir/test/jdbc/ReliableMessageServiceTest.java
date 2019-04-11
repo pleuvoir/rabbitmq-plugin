@@ -1,21 +1,20 @@
 package io.github.pleuvoir.test.jdbc;
 
-import java.time.LocalDateTime;
-
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.jdbc.JDBCMessageLogRepository;
+import io.github.pleuvoir.rabbit.utils.Generator;
+import io.github.pleuvoir.test.BaseTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
-import io.github.pleuvoir.rabbit.utils.Generator;
-import io.github.pleuvoir.test.BaseTest;
+import java.time.LocalDateTime;
 
 public class ReliableMessageServiceTest extends BaseTest {
 
 	@Autowired
-	MessageLogReposity reliableMessageService;
+    JDBCMessageLogRepository reliableMessageService;
 
 
 	@Test
