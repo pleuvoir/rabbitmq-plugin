@@ -26,7 +26,7 @@ public class ExceptionExtendConsumer extends AbstractRetryRabbitConsumeTemplate 
 	@Override
 	protected void handler(String data) {
 
-		LOGGER.info("接受到消息：{}", data);
+		LOGGER.info("ExceptionExtendConsumer 接受到新消息：{}", data);
 
 		pubParamService.saveAndUpdate9999WithException();
 	}

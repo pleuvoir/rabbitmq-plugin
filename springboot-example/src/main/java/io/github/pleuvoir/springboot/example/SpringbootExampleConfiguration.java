@@ -1,9 +1,12 @@
 package io.github.pleuvoir.springboot.example;
 
-import java.io.IOException;
-
-import javax.sql.DataSource;
-
+import com.baomidou.mybatisplus.entity.GlobalConfiguration;
+import com.baomidou.mybatisplus.enums.DBType;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.plugins.OptimisticLockerInterceptor;
+import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
+import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitPlugin;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -18,21 +21,15 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.baomidou.mybatisplus.entity.GlobalConfiguration;
-import com.baomidou.mybatisplus.enums.DBType;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.baomidou.mybatisplus.plugins.OptimisticLockerInterceptor;
-import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
-import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
-
-import io.github.pleuvoir.rabbit.autoconfigure.EnableRabbitPlugin;
+import javax.sql.DataSource;
+import java.io.IOException;
 
 @Configuration
 @EnableTransactionManagement
 @MapperScan("io.github.pleuvoir.springboot.example.dao")
 
 @AutoConfigureAfter({RabbitAutoConfiguration.class})
-@EnableRabbitPlugin(maxRetry = 5)// 看这里，启用
+@EnableRabbitPlugin(maxRetry = 1)// 看这里，启用
 public class SpringbootExampleConfiguration {
 	
 	/*
@@ -63,8 +60,13 @@ public class SpringbootExampleConfiguration {
 		factory.setPrefetchCount(250);
 		return factory;
 	}
-	
-	
+
+    // 数据源和事务管理器 必须的
+    @Bean("transactionManager")
+    public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
 	/**
 	 * mybatis-plus
 	 */
@@ -87,9 +89,5 @@ public class SpringbootExampleConfiguration {
 		return factoryBean;
 	}
 
-	// 数据源和事务管理器 必须的
-	@Bean("transactionManager")
-	public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource) {
-		return new DataSourceTransactionManager(dataSource);
-	}
+
 }
