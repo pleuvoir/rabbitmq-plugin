@@ -10,22 +10,21 @@
 
 ## 介绍
 
-本项目的目标是解决消息重复消费的问题以及方便的使用手动应答。
+本项目的目标是解决消息幂等的问题以及方便的使用手动应答，在手动确认模式下尽力处理服务异常时可恢复性的故障。
 
 ## 特性
 
 - Spring支持
 - 简单易用
-- 自动配置
 - 方便的模板
-- 消费侧异常补偿重试机制
-- 定时队列
+- 消费侧异常重试机制
+- 定时消息
 
 ## 快速开始
 
 由于项目强依赖于`Spring`容器，因而只能在`Spring`环境下使用。
 
-### 1.引入依赖
+### 引入依赖
 
 ```xml
 <dependency>
@@ -35,17 +34,19 @@
 </dependency>
 ```
 
-### 2. 使用Spring进行管理
+### 使用Spring进行管理
 
 ```java
-@EnableRabbitPlugin
+@EnableRabbitPlugin(maxRetry = 1)
 @Configuration
 public class PluginConfiguration {
 
 }
 ```
 
-### 4. 发送消息模板
+`maxRetry`代表当业务异常时进行重试的次数。
+
+### 发送消息模板
 
 框架中定义了两种消息发送模版：
 
@@ -60,12 +61,16 @@ private RabbitTemplate rabbitTemplate;
 
 ```java
 @Resource(name = "rabbitTemplate")
-private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; 
+private RabbitTemplate rabbitConsumeTemplate; 
 ```
 
-### 5. 可靠消息消费模板
+区别是什么？
 
-继承`AbstractRetryRabbitConsumeTemplate`即可，使用此消费模版的消息，必须是来自可靠消息发送模板的消息，否则会被忽略。
+可靠消息发送模板发送的消息只能由可靠消息消费模板来处理，普通模版则无此限制。
+
+### 可靠消息消费模板
+
+继承`AbstractRetryRabbitConsumeTemplate`即可，注意：使用此消费模版的消息，必须是来自可靠消息发送模板的消息，否则会被忽略。
 
 ```java
 @Service
@@ -83,6 +88,9 @@ public class NormalConsumer extends AbstractRetryRabbitConsumeTemplate {
 }
 ```
 
+### 定时消息
+
+提供了到达指定时间投递消息的功能，有别于`FIFO`延迟队列实现的延迟消息。
 
 ## 示例
 
@@ -100,7 +108,7 @@ public class NormalConsumer extends AbstractRetryRabbitConsumeTemplate {
 
 - 手动应答
 
-  存在应答时（网络抖动、超时、忘记应答、异常导致无法应答）等问题。由于未对消息进行有效应答，当消费者断开连接后，MQ Broker会将消息重新投递。关口就在于第一次收到消息的消费者业务是否处理成功？如果业务本身是幂等的，那重复消费自然没有问题。如果非幂等，那这次消息应当如何处理？
+  存在应答时（网络抖动、超时、忘记应答、异常导致无法应答）等问题。由于未对消息进行有效应答，当消费者断开连接后，MQ Broker会将消息重新投递。关口是第一次收到消息的消费者业务是否处理成功？如果业务本身是幂等的，那重复消费自然没有问题。如果非幂等，那这次消息应当如何处理？
 
 解决之道：
 
@@ -109,7 +117,15 @@ public class NormalConsumer extends AbstractRetryRabbitConsumeTemplate {
 
 ### 依赖的外部配置
 
-项目本身针对可靠消息的保障，尽量不侵扰`RabbitMQ`和`Spring`的集成和使用。因而`RabbitMQ`本身配置应当由应用端本身提供，数据源和数据库事务亦是如此。
+项目本身针对可靠消息的保障，尽量不侵扰`RabbitMQ`和`Spring`的集成和使用。因而`RabbitMQ`的配置应由应用端本身提供，数据源和数据库事务亦是如此。
+
+### 消息日志记录
+
+当项目启动时会根据数据库类型自动创建消息日志表。
+
+### 重试机制
+
+当业务异常时，可靠消息处理框架会进行多次重试，重试次数可通过`@EnableRabbitPlugin(maxRetry = 1)`属性指定。当重试次数到达设定的最高值时，消息状态会变为失败。**注意：重试机制只会在手动确认模式下生效。**
 
 ## TODO LIST
 
