@@ -66,7 +66,7 @@ private RabbitTemplate rabbitTemplate;
 
 区别是什么？
 
-可靠消息发送模板发送的消息只能由可靠消息消费模板来处理，这两者是配套使用的缺一不可。
+可靠消息发送模板发送的消息只能由可靠消息消费模板来处理，这两者配套使用缺一不可。
 
 ### 可靠消息消费模板
 
@@ -125,13 +125,14 @@ public class NormalConsumer extends AbstractRetryRabbitConsumeTemplate {
 
 ### 重试机制
 
-当业务异常时，可靠消息处理框架会进行多次重试，重试次数可通过`@EnableRabbitPlugin(maxRetry = 1)`属性指定。当重试次数到达设定的最高值时，消息状态会变为失败。**注意：重试机制只会在手动确认模式下生效。**
+当业务异常时，可靠消息处理框架会进行多次重试，重试次数可通过`@EnableRabbitPlugin(maxRetry = 1)`属性指定。当重试次数到达设定的值时，消息状态会变为失败。**注意：重试机制只会在手动确认模式下生效。**
 
 ## TODO LIST
 
 - [ ] 消费成功的消息定时删除
 - [ ] 未到达Broker的消息定时重投
 - [ ] Mysql支持
+- [ ] 阶梯消息
 
 
 ## 开源协议
