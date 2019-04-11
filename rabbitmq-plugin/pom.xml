@@ -4,7 +4,7 @@
 
 	<groupId>io.github.pleuvoir</groupId>
 	<artifactId>rabbitmq-plugin</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.6</version>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<description>The project provide more reliability to use rabbitmq.</description>
@@ -34,7 +34,6 @@
 			<groupId>io.github.pleuvoir</groupId>
 			<artifactId>plugin-base</artifactId>
 			<version>${plugin.base.version}</version>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>

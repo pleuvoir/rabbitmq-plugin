@@ -1,10 +1,8 @@
 package io.github.pleuvoir.rabbit.reliable.template;
 
-import java.time.LocalDateTime;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
+import io.github.pleuvoir.rabbit.utils.Generator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
@@ -14,9 +12,9 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
-import io.github.pleuvoir.rabbit.utils.Generator;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 
@@ -49,15 +47,13 @@ public class ReliableRabbitPublishTemplate extends RabbitTemplate {
 						id(messageId).
 						body(new String(message.getBody())).
 						status(MessageCommitLog.PREPARE_TO_BROKER).
-						retryCount(-1).
+                        retryCount(0).
 						maxRetry(templateConfig.getMaxRetry()).
 						build();
 				
 				reposity.insert(log);
 
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
-				}
+                LOGGER.info("*[messageId={}] 准备发送消息到 MQ Broker", messageId);
 
 				return message;
 			}

@@ -1,9 +1,10 @@
 package io.github.pleuvoir.rabbit.reliable.jdbc;
 
-import java.time.LocalDateTime;
-
-import javax.annotation.Resource;
-
+import io.github.pleuvoir.rabbit.RabbitConsumeException;
+import io.github.pleuvoir.rabbit.RetryStrategy;
+import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
+import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
+import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.Assert;
 
-import io.github.pleuvoir.rabbit.RabbitConsumeException;
-import io.github.pleuvoir.rabbit.reliable.MessageCommitLog;
-import io.github.pleuvoir.rabbit.reliable.MessageLogReposity;
-import io.github.pleuvoir.rabbit.reliable.RabbitConsumeCallBack;
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 @Service
 public class JDBCExcuteWithTransaction {
@@ -50,12 +49,13 @@ public class JDBCExcuteWithTransaction {
 			return;
 		}
 
-		if (prevMessageLog.getRetryCount() >= prevMessageLog.getMaxRetry()) {
-			changeToFail(messageId);
-			LOGGER.warn("*[messageId={}] 消息第{}次重试，消息内容{}，重试已超过最大次数{}，此次消息不进行处理，已更新消息日志为消费失败。", messageId,
-					prevMessageLog.getRetryCount() + 1, prevMessageLog.getBody(), prevMessageLog.getMaxRetry());
-			return;
-		}
+        final Integer maxRetry = prevMessageLog.getMaxRetry();
+        final Integer retryCount = prevMessageLog.getRetryCount();
+        final String body = prevMessageLog.getBody();
+
+        if (retryCount > 0) {
+            LOGGER.info("*[messageId={}] 消息第{}次重试，消息内容{}。", messageId, retryCount, body);
+        }
 
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
@@ -69,8 +69,17 @@ public class JDBCExcuteWithTransaction {
 		} catch (Throwable e) {
 			txManager.rollback(txStatus);
 			LOGGER.warn("*[messageId={}] 业务执行失败，已回滚。", messageId, e);
-			messageReposity.incrementRetryCount(messageId); // 如果在这里宕机会多重试一次可以接受
-			throw new RabbitConsumeException(e);
+            RetryStrategy retryStrategy;
+            if (maxRetry == 0 || retryCount == maxRetry) {
+                retryStrategy = RetryStrategy.DISABLE;
+                changeToFail(messageId);
+                LOGGER.warn("*[messageId={}] 业务执行失败，不进行重试，已更新消息日志为消费失败，retryCount={}，maxRetry={}。", messageId, retryCount, maxRetry);
+            } else {
+                retryStrategy = RetryStrategy.ENABLE;
+                messageReposity.incrementRetryCount(messageId); // 如果在这里宕机会多重试一次可以接受
+                LOGGER.warn("*[messageId={}] 业务执行失败，即将进行第{}次重试。", messageId, retryCount + 1);
+            }
+            throw new RabbitConsumeException(retryStrategy, e);
 		}
 	}
 

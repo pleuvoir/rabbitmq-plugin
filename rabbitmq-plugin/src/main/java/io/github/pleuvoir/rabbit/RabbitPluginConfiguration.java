@@ -1,7 +1,10 @@
 package io.github.pleuvoir.rabbit;
 
-import javax.sql.DataSource;
-
+import io.github.pleuvoir.rabbit.extension.FixedTimeQueueHelper;
+import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
+import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig.PublishTemplateConfigBuilder;
+import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
+import lombok.Setter;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -13,12 +16,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import io.github.pleuvoir.rabbit.extension.FixedTimeQueueHelper;
-import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
-import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig.PublishTemplateConfigBuilder;
-import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitConsumeTemplate;
-import io.github.pleuvoir.rabbit.reliable.template.ReliableRabbitPublishTemplate;
-import lombok.Setter;
+import javax.sql.DataSource;
 
 @EnableRabbit
 @ComponentScan({ "io.github.pleuvoir.rabbit.reliable" })
@@ -52,14 +50,6 @@ public class RabbitPluginConfiguration {
 		ReliableRabbitPublishTemplate template = new ReliableRabbitPublishTemplate(connectionFactory);
 		template.setTemplateConfig(this.publishTemplateConfigBuilder.build());
 		return template;
-	}
-
-	/**
-	 * 可靠消息消费模板
-	 */
-	@Bean(name = "reliableRabbitConsumeTemplate")
-	public ReliableRabbitConsumeTemplate reliableRabbitConsumeTemplate() {
-		return new ReliableRabbitConsumeTemplate();
 	}
 
 	/**

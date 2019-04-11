@@ -1,17 +1,14 @@
 package test.mq;
 
-import java.io.IOException;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.github.pleuvoir.base.kit.PropertiesLoadUtil;
-import io.github.pleuvoir.base.kit.PropertiesWrap;
 import io.github.pleuvoir.springboot.example.rabbit.MessagePayload;
 import io.github.pleuvoir.springboot.example.rabbit.producer.ExceptionProducer;
 import io.github.pleuvoir.springboot.example.rabbit.producer.NormalMessageProducer;
 import io.github.pleuvoir.springboot.example.rabbit.producer.UnackMessageProducer;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import test.BaseTest;
+
+import java.io.IOException;
 
 public class MainTest extends BaseTest {
 	
@@ -41,8 +38,8 @@ public class MainTest extends BaseTest {
 
 		exceptionProducer.send(messagePayload);
 		
-		System.in.read();
-		//Thread.currentThread().join();
+		//System.in.read();
+		Thread.currentThread().join();
 	}
 	
 
