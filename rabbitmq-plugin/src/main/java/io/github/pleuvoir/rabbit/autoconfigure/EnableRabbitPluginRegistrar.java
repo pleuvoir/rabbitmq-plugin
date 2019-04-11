@@ -7,7 +7,6 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAttributes;
 
-import io.github.pleuvoir.base.autoconfigure.AbstractPluginRegistrar;
 import io.github.pleuvoir.rabbit.RabbitPluginConfiguration;
 import io.github.pleuvoir.rabbit.reliable.template.PublishTemplateConfig;
 

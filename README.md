@@ -29,16 +29,13 @@
 
 ```xml
 <dependency>
-	<groupId>io.github.pleuvoir</groupId>
-	<artifactId>rabbitmq-plugin</artifactId>
-	<version>${latest.version}</version>
+  <groupId>io.github.pleuvoir</groupId>
+  <artifactId>rabbitmq-plugin</artifactId>
+  <version>${latest.version}</version>
 </dependency>
 ```
 
 ### 2. 使用Spring进行管理
-
-
-如果是使用注解的项目，建议使用自动配置。就像这样：
 
 ```java
 @EnableRabbitPlugin
@@ -50,17 +47,42 @@ public class PluginConfiguration {
 
 ### 4. 发送消息模板
 
-```java
-@Autowired
-private RabbitTemplate rabbitTemplate; // 实际上使用的是项目中定义的增强模板，会在每次发送消息时带上messageId
-```
+框架中定义了两种消息发送模版：
 
-### 5. 消费消息模板
+可靠消息发送模板，会在每次发送消息时带上messageId，并且每次发送都会在数据库中记录消息日志：
 
 ```java
 @Autowired
-private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; // 可靠消息消费模板
+private RabbitTemplate rabbitTemplate;
 ```
+
+如果想使用普通模版：
+
+```java
+@Resource(name = "rabbitTemplate")
+private ReliableRabbitConsumeTemplate rabbitConsumeTemplate; 
+```
+
+### 5. 可靠消息消费模板
+
+继承`AbstractRetryRabbitConsumeTemplate`即可，使用此消费模版的消息，必须是来自可靠消息发送模板的消息，否则会被忽略。
+
+```java
+@Service
+public class NormalConsumer extends AbstractRetryRabbitConsumeTemplate {
+
+    @Override
+    protected void handler(String data) {
+        LOGGER.info("NormalConsumer 接受到新消息：{}", data);
+    }
+
+    @Override
+    protected void exceptionHandler(Message message, Throwable e) {
+    	LOGGER.error("exception occur",e);
+    }
+}
+```
+
 
 ## 示例
 

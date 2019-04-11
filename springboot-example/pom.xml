@@ -108,12 +108,12 @@
 			<artifactId>mybatis-plus</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>oracle</groupId>
 			<artifactId>ojdbc8</artifactId>
 			<version>${ojdbc8.version}</version>
 		</dependency>
-
+ -->
 
 		<!-- druid -->
 		<dependency>

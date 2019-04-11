@@ -14,26 +14,37 @@
 		<jdk.version>1.8</jdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<lombok.version>1.18.2</lombok.version>
-		<plugin.base.version>1.0.1</plugin.base.version>
 		<spring.version>5.0.8.RELEASE</spring.version>
 		<junit.version>4.12</junit.version>
 		<uuid.version>3.1.5</uuid.version>
+		<lang3.version>3.7</lang3.version>
+		<fastjson.version>1.2.49</fastjson.version>
+		<commons-io.version>2.6</commons-io.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<spring.rabbit.version>2.0.5.RELEASE</spring.rabbit.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
-		</dependency>
-		<!-- plugin base -->
-		<dependency>
-			<groupId>io.github.pleuvoir</groupId>
-			<artifactId>plugin-base</artifactId>
-			<version>${plugin.base.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
